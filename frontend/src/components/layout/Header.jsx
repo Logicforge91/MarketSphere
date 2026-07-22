@@ -1,7 +1,17 @@
 import React from "react";
 import { Bell, Heart, Search, ShieldCheck, ShoppingCart, Truck, User } from "lucide-react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useShop } from "../../context/ShopContext";
 
 export default function Header() {
+  const { cart, query, setQuery, wishlist } = useShop();
+  const navigate = useNavigate();
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    navigate("/search");
+  }
+
   return (
     <header className="topbar">
       <div className="service-strip">
@@ -10,22 +20,24 @@ export default function Header() {
         <span><Bell size={14} /> 24/7 Support</span>
       </div>
       <div className="nav">
-        <div className="brand"><ShoppingCart size={28} /> Shop<span>Hub</span></div>
-        <label className="search">
+        <Link to="/" className="brand"><ShoppingCart size={28} /> Shop<span>Hub</span></Link>
+        <form className="search" onSubmit={handleSubmit}>
           <Search size={18} />
-          <input placeholder="Search for products, brands and more..." />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search for products, brands and more..." />
           <button>Search</button>
-        </label>
+        </form>
         <div className="actions">
-          <button><Heart size={20} /><span>Wishlist</span></button>
-          <button className="cart-dot"><ShoppingCart size={20} /><span>Cart</span></button>
-          <button><User size={20} /><span>Account</span></button>
+          <Link to="/wishlist"><Heart size={20} /><span>Wishlist ({wishlist.length})</span></Link>
+          <Link to="/cart" className="cart-dot" data-count={cart.length}><ShoppingCart size={20} /><span>Cart</span></Link>
+          <Link to="/orders"><User size={20} /><span>Account</span></Link>
         </div>
       </div>
       <nav className="tabs">
-        {["Home", "Categories", "Brands", "Deals", "New Arrivals", "Best Sellers"].map((item) => (
-          <a className={item === "Home" ? "active" : ""} key={item}>{item}</a>
-        ))}
+        <NavLink to="/">Home</NavLink>
+        <NavLink to="/products">Categories</NavLink>
+        <NavLink to="/products">Deals</NavLink>
+        <NavLink to="/search">Search</NavLink>
+        <NavLink to="/orders">Orders</NavLink>
       </nav>
     </header>
   );
