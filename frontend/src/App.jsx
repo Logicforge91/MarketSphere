@@ -1,6 +1,7 @@
 import HomePage from "./pages/HomePage.jsx";
 import ProductPage from "./pages/ProductPage.jsx";
 import MobileShowcasePage from "./pages/MobileShowcasePage.jsx";
+import FigmaMissingSectionsPage from "./pages/FigmaMissingSectionsPage.jsx";
 import DesignSystemPanel from "./components/design/DesignSystemPanel.jsx";
 
 export default function App() {
@@ -10,6 +11,7 @@ export default function App() {
       <HomePage />
       <ProductPage />
       <MobileShowcasePage />
+      <FigmaMissingSectionsPage />
     </main>
   );
 }
