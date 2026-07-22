@@ -1,3 +1,4 @@
+import React from "react";
 import { ChevronRight, Grid2X2 } from "lucide-react";
 import { categories } from "../../data/shopData";
 

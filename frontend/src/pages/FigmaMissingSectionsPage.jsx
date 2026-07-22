@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Award,
   Bell,
@@ -5,6 +6,7 @@ import {
   Check,
   CreditCard,
   Gift,
+  Heart,
   Headphones,
   Home,
   Lock,

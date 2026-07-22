@@ -1,3 +1,4 @@
+import React from "react";
 import { brands, deals, trending } from "../data/shopData";
 import BenefitRow from "../components/common/BenefitRow";
 import SectionTitle from "../components/common/SectionTitle";

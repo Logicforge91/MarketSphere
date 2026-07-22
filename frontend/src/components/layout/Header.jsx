@@ -1,3 +1,4 @@
+import React from "react";
 import { Bell, Heart, Search, ShieldCheck, ShoppingCart, Truck, User } from "lucide-react";
 
 export default function Header() {

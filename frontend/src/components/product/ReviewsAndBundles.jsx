@@ -1,3 +1,4 @@
+import React from "react";
 import { productDetail } from "../../data/shopData";
 
 function ProductMini({ title }) {

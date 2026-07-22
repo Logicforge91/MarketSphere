@@ -1,3 +1,4 @@
+import React from "react";
 import { Minus, Plus, ShieldCheck, Star } from "lucide-react";
 import { productDetail } from "../../data/shopData";
 import { money } from "../../utils/format";

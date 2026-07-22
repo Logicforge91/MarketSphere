@@ -1,3 +1,4 @@
+import React from "react";
 import { benefits } from "../../data/shopData";
 
 export default function BenefitRow() {

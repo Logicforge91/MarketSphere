@@ -1,3 +1,4 @@
+import React from "react";
 import { Menu, Search } from "lucide-react";
 
 export default function MobileHeader({ title }) {

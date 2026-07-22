@@ -1,3 +1,4 @@
+import React from "react";
 import HomePage from "./pages/HomePage.jsx";
 import ProductPage from "./pages/ProductPage.jsx";
 import MobileShowcasePage from "./pages/MobileShowcasePage.jsx";

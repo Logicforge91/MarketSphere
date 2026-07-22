@@ -1,3 +1,4 @@
+import React from "react";
 import { Heart, Star } from "lucide-react";
 import { money } from "../../utils/format";
 

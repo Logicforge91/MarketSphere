@@ -1,3 +1,4 @@
+import React from "react";
 import { heroProducts } from "../../data/shopData";
 
 export default function Hero() {

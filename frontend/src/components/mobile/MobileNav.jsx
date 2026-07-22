@@ -1,3 +1,4 @@
+import React from "react";
 import { Grid2X2, Heart, Home, ShoppingCart, User } from "lucide-react";
 
 export default function MobileNav() {

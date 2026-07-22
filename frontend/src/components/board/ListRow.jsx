@@ -1,3 +1,4 @@
+import React from "react";
 import { ChevronRight } from "lucide-react";
 
 export default function ListRow({ icon: Icon, title, meta, right }) {

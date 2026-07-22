@@ -1,3 +1,4 @@
+import React from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { deals } from "../data/shopData";
 import BenefitRow from "../components/common/BenefitRow";

@@ -1,3 +1,4 @@
+import React from "react";
 import { ChevronRight } from "lucide-react";
 import { cartItems, categories, deals } from "../../data/shopData";
 import { money } from "../../utils/format";
