@@ -5,12 +5,12 @@ export default function Hero() {
   return (
     <section className="hero">
       <div className="hero-copy">
-        <p>New Collection</p>
-        <h1>Upgrade Your Lifestyle Up to <span>60% Off</span></h1>
-        <small>Discover top brands and latest products at unbeatable prices.</small>
+        <p>Big Saving Days Live</p>
+        <h1>India&apos;s favourite deals up to <span>70% Off</span></h1>
+        <small>Mobiles, fashion, appliances and daily essentials with UPI offers, EMI and fast delivery.</small>
         <div>
-          <button className="primary">Shop Now</button>
-          <button className="secondary">Explore Deals</button>
+          <button className="primary">Shop Sale</button>
+          <button className="secondary">View Offers</button>
         </div>
       </div>
       <div className="hero-media">

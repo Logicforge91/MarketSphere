@@ -5,7 +5,7 @@ import SectionTitle from "../common/SectionTitle";
 
 export default function CategoryRail() {
   return (
-    <section>
+    <section className="home-category-rail">
       <SectionTitle title="Shop by Category" action="View All" />
       <div className="category-grid">
         {categories.slice(0, 7).map(({ name, icon: Icon, accent }) => (

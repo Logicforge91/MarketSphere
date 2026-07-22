@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useShop } from "../context/ShopContext";
 import { money } from "../utils/format";
+import OfferList from "../components/commerce/OfferList";
 
 export default function CartPage() {
   const { cart, cartTotal, removeFromCart, updateQty } = useShop();
@@ -21,6 +22,7 @@ export default function CartPage() {
         ))}
       </section>
       <aside className="summary-card">
+        <OfferList />
         <h2>Price Details</h2>
         <p><span>Subtotal</span><b>{money(cartTotal)}</b></p>
         <p><span>Delivery</span><b>Free</b></p>

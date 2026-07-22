@@ -2,6 +2,8 @@ import React from "react";
 import { Minus, Plus, ShieldCheck, Star } from "lucide-react";
 import { productDetail } from "../../data/shopData";
 import { money } from "../../utils/format";
+import OfferList from "../commerce/OfferList";
+import PincodeDelivery from "../commerce/PincodeDelivery";
 
 export default function ProductDetail() {
   return (
@@ -19,6 +21,8 @@ export default function ProductDetail() {
         <div className="swatches">{productDetail.swatches.map((color) => <button style={{ backgroundColor: color }} key={color} />)}</div>
         <div className="qty"><button><Minus size={14} /></button><span>1</span><button><Plus size={14} /></button></div>
         <div className="buy-actions"><button className="primary">Add to Cart</button><button className="dark">Buy Now</button></div>
+        <OfferList />
+        <PincodeDelivery />
       </div>
       <aside className="store-box">
         <strong>Sold by ShopSphere Official</strong>

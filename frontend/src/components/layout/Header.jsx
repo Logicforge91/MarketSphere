@@ -29,7 +29,7 @@ export default function Header() {
         <div className="actions">
           <Link to="/wishlist"><Heart size={20} /><span>Wishlist ({wishlist.length})</span></Link>
           <Link to="/cart" className="cart-dot" data-count={cart.length}><ShoppingCart size={20} /><span>Cart</span></Link>
-          <Link to="/orders"><User size={20} /><span>Account</span></Link>
+          <Link to="/account"><User size={20} /><span>Account</span></Link>
         </div>
       </div>
       <nav className="tabs">
@@ -38,6 +38,8 @@ export default function Header() {
         <NavLink to="/products">Deals</NavLink>
         <NavLink to="/search">Search</NavLink>
         <NavLink to="/orders">Orders</NavLink>
+        <NavLink to="/wallet">Wallet</NavLink>
+        <NavLink to="/support">Help</NavLink>
       </nav>
     </header>
   );

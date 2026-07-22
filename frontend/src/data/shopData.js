@@ -48,12 +48,12 @@ export const heroProducts = [
 ];
 
 export const deals = [
-  { name: "Wireless Earbuds", price: 59.99, oldPrice: 79.99, rating: 4.6, discount: "-40%", image: "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=500&q=80" },
-  { name: "Smart Watch Series 9", price: 129.99, oldPrice: 199.99, rating: 4.7, discount: "-35%", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=80" },
-  { name: "Wireless Headphones", price: 79.99, oldPrice: 129.99, rating: 4.5, discount: "-30%", image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=500&q=80" },
-  { name: "Instant Pot Duo 7-in-1", price: 89.99, oldPrice: 119.99, rating: 4.6, discount: "-30%", image: "https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=500&q=80" },
-  { name: "Running Shoes", price: 69.99, oldPrice: 99.99, rating: 4.5, discount: "-30%", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80" },
-  { name: "Men's Jeans", price: 34.99, oldPrice: 59.99, rating: 4.4, discount: "-40%", image: "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=500&q=80" },
+  { name: "boAt Airdopes 141", price: 1299, oldPrice: 4490, rating: 4.3, discount: "-71%", image: "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&w=500&q=80" },
+  { name: "Noise ColorFit Pro 4", price: 2499, oldPrice: 5999, rating: 4.4, discount: "-58%", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=80" },
+  { name: "Sony WH-1000XM5", price: 24990, oldPrice: 34990, rating: 4.8, discount: "-29%", image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=500&q=80" },
+  { name: "Prestige Electric Cooker", price: 2899, oldPrice: 4299, rating: 4.2, discount: "-33%", image: "https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=500&q=80" },
+  { name: "Puma Running Shoes", price: 3499, oldPrice: 6999, rating: 4.5, discount: "-50%", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80" },
+  { name: "Levi's 511 Jeans", price: 1799, oldPrice: 3499, rating: 4.4, discount: "-49%", image: "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=500&q=80" },
 ];
 
 export const trending = [
@@ -67,8 +67,8 @@ export const trending = [
 
 export const productDetail = {
   name: "Sony WH-1000XM5 Wireless Noise Cancelling Headphones",
-  price: 279,
-  oldPrice: 399.99,
+  price: 24990,
+  oldPrice: 34990,
   rating: 4.8,
   reviews: 2534,
   sold: "10K+",
@@ -78,9 +78,9 @@ export const productDetail = {
 };
 
 export const cartItems = [
-  { name: "Sony WH-1000XM5", price: 279, qty: 1, image: productDetail.image },
-  { name: "Nike Air Max 270", price: 119, qty: 1, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=300&q=80" },
-  { name: "Levi's 511 Jeans", price: 49, qty: 1, image: "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=300&q=80" },
+  { name: "Sony WH-1000XM5", price: 24990, qty: 1, image: productDetail.image },
+  { name: "Nike Air Max 270", price: 5999, qty: 1, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=300&q=80" },
+  { name: "Levi's 511 Jeans", price: 1799, qty: 1, image: "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=300&q=80" },
 ];
 
 export const benefits = [
@@ -116,3 +116,10 @@ export const orders = [
 ];
 
 export const accountMenu = ["Profile Information", "Manage Addresses", "Payment Methods", "Notification Preferences", "Privacy & Security", "Language", "Currency", "App Theme"];
+
+export const indianOffers = [
+  "10% Instant Discount on HDFC Bank Cards",
+  "5% Unlimited Cashback on ShopHub Axis Card",
+  "No Cost EMI from ₹1,999/month",
+  "Extra ₹500 off on UPI payments",
+];
