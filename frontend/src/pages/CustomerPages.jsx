@@ -175,6 +175,8 @@ export function PaymentMethodsPage() {
 }
 
 export function TrackOrderPage() {
+  const { latestOrder } = useShop();
+  const shipments = latestOrder?.shipments || [];
   const steps = [
     { label: "Order confirmed", date: "24 May, 10:25 AM", done: true },
     { label: "Packed", date: "25 May, 08:10 AM", done: true },
@@ -184,12 +186,23 @@ export function TrackOrderPage() {
 
   return (
     <main className="real-page inner-page track-page">
-      <InnerHeading eyebrow="Order #MS205186" title="Track your order" copy="Estimated delivery: Wednesday, 27 May" />
+      <InnerHeading eyebrow={`Order #${latestOrder?.id || "MS205186"}`} title="Track your order" copy={latestOrder ? `${latestOrder.deliveryMethod?.name || "Standard delivery"} · ${latestOrder.deliveryDate || "Estimated in 3-5 business days"}` : "Estimated delivery: Wednesday, 27 May"} />
       <section className="tracking-card">
         <div className="tracking-product"><PackageCheck /><div><strong>Floral Maxi Dress</strong><span>Size M · Multi colour · Qty 1</span></div><Link to="/product/floral-maxi-dress">View product</Link></div>
         <div className="tracking-timeline">{steps.map((step) => <div className={step.done ? "done" : ""} key={step.label}><i>{step.done ? <Check size={14} /> : <Truck size={14} />}</i><strong>{step.label}</strong><span>{step.date}</span></div>)}</div>
         <div className="tracking-meta"><div><span>Tracking number</span><strong>TMX34567890</strong></div><div><span>Delivery address</span><strong>Rahul Sharma, Koramangala, Bengaluru</strong></div></div>
       </section>
+      {latestOrder && <section className="shipment-dashboard">
+        <header><div><span>Shipment status</span><h2>{shipments.length || 1} active {(shipments.length || 1) === 1 ? "package" : "packages"}</h2></div><b>{latestOrder.deliveryMethod?.name}</b></header>
+        <div className="seller-shipment-list">{(shipments.length ? shipments : [{ id: "SHP-1", seller: "MarketSphere Select", items: latestOrder.items || [], estimate: "3-5 days" }]).map((shipment, index) => <article className="seller-shipment-card" key={shipment.id}>
+          <div className="shipment-card-heading"><div><small>Package {index + 1}</small><strong>{shipment.seller}</strong></div><span>{index ? "Processing" : "Shipped"}</span></div>
+          <div className="shipment-product-list">{shipment.items.map((item) => <div key={`${shipment.id}-${item.id || item.name}`}><img src={item.image} alt="" /><span><strong>{item.name}</strong><small>Qty {item.qty || 1}</small></span></div>)}</div>
+          <div className="shipment-progress"><i className="done" /><i className="done" /><i className={index ? "" : "done"} /><i /></div>
+          <div className="shipment-progress-labels"><span>Confirmed</span><span>Packed</span><span>Shipped</span><span>Delivered</span></div>
+          <footer><span>Tracking ID <strong>{shipment.id}-{latestOrder.id}</strong></span><span>Estimated <strong>{shipment.estimate}</strong></span></footer>
+        </article>)}</div>
+        <aside className="delivery-preference-summary"><div><strong>{latestOrder.pickupStore ? "Pickup location" : "Delivery preference"}</strong><span>{latestOrder.pickupStore || (latestOrder.contactless ? "Contactless delivery" : "Hand delivery")}</span></div>{latestOrder.deliverySlot && <div><strong>Selected slot</strong><span>{latestOrder.deliveryDate} · {latestOrder.deliverySlot}</span></div>}{latestOrder.deliveryInstructions && <div><strong>Instructions</strong><span>{latestOrder.deliveryInstructions}</span></div>}</aside>
+      </section>}
     </main>
   );
 }
@@ -207,6 +220,14 @@ export function OrderSuccessPage() {
       <span>Order #{latestOrder.id}</span><h1>Order placed successfully</h1>
       <p>Thank you for shopping with MarketSphere. We sent a confirmation to your email.</p>
       <div className="success-summary"><div><Truck /><span>Order total<strong>{money(latestOrder.total)}</strong></span></div><div><CreditCard /><span>Payment method<strong>{latestOrder.paymentMethod || "Paid"}</strong></span></div></div>
+      <section className="payment-receipt">
+        <header><div><span>Payment receipt</span><strong>{latestOrder.payment?.status || "Order confirmed"}</strong></div><button onClick={() => window.print()}>Print receipt</button></header>
+        <div><span>Receipt number</span><strong>RCT-{latestOrder.id}</strong></div>
+        <div><span>Transaction reference</span><strong>{latestOrder.payment?.transactionId || "Pay on delivery"}</strong></div>
+        <div><span>Processed by</span><strong>{latestOrder.payment?.gateway || "MarketSphere"}</strong></div>
+        <div><span>Payment instrument</span><strong>{latestOrder.payment?.instrument || latestOrder.paymentMethod}</strong></div>
+        <div className="receipt-total"><span>Amount</span><strong>{money(latestOrder.total)}</strong></div>
+      </section>
       <div className="success-actions"><Link className="primary" to="/">Continue shopping</Link><Link className="secondary" to="/track-order">Track order</Link></div>
     </main>
   );

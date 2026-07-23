@@ -129,6 +129,18 @@ export function AuthProvider({ children }) {
     persistSession({ ...session, user: { ...session.user, twoFactorEnabled: enabled } });
   }, [persistSession, session]);
 
+  const updateProfile = useCallback((updates) => {
+    if (!session) return false;
+    persistSession({ ...session, user: { ...session.user, ...updates, updatedAt: new Date().toISOString() } });
+    return true;
+  }, [persistSession, session]);
+
+  const changePassword = useCallback(({ currentPassword, newPassword }) => {
+    if (!session || !currentPassword || newPassword.length < 8) return false;
+    persistSession({ ...session, user: { ...session.user, passwordChangedAt: new Date().toISOString() } });
+    return true;
+  }, [persistSession, session]);
+
   const deleteAccount = useCallback(() => {
     persistSession(null);
     setDevices([]);
@@ -138,6 +150,7 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(() => ({
     challenge,
+    changePassword,
     deleteAccount,
     devices,
     isAuthenticated: Boolean(session && session.expiresAt > Date.now()),
@@ -150,9 +163,10 @@ export function AuthProvider({ children }) {
     session,
     setTwoFactor,
     socialLogin,
+    updateProfile,
     user: session?.user || null,
     verifyChallenge,
-  }), [challenge, deleteAccount, devices, loginWithPassword, logout, logoutOtherDevices, register, requestOtp, revokeDevice, session, setTwoFactor, socialLogin, verifyChallenge]);
+  }), [challenge, changePassword, deleteAccount, devices, loginWithPassword, logout, logoutOtherDevices, register, requestOtp, revokeDevice, session, setTwoFactor, socialLogin, updateProfile, verifyChallenge]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

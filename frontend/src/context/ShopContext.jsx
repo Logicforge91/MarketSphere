@@ -24,6 +24,7 @@ export function ShopProvider({ children }) {
   const [sortBy, setSortBy] = useState("featured");
   const [notification, setNotification] = useState("");
   const [orders, setOrders] = useState(() => readStoredState("marketsphere:orders", seedOrders));
+  const [returnRequests, setReturnRequests] = useState(() => readStoredState("marketsphere:returns", []));
 
   const products = useMemo(() => {
     const filtered = catalog.filter((product) => {
@@ -61,6 +62,10 @@ export function ShopProvider({ children }) {
   useEffect(() => {
     window.localStorage.setItem("marketsphere:orders", JSON.stringify(orders));
   }, [orders]);
+
+  useEffect(() => {
+    window.localStorage.setItem("marketsphere:returns", JSON.stringify(returnRequests));
+  }, [returnRequests]);
 
   const addToCart = useCallback((product) => {
     setCart((items) => {
@@ -160,6 +165,112 @@ export function ShopProvider({ children }) {
     return order;
   }, [cart]);
 
+  const updateOrder = useCallback((orderId, updater) => {
+    setOrders((items) => items.map((order) => order.id === orderId
+      ? (typeof updater === "function" ? updater(order) : { ...order, ...updater })
+      : order));
+  }, []);
+
+  const cancelOrder = useCallback((orderId, details = {}) => {
+    const cancelledAt = new Date().toISOString();
+    const refundFailed = details.refundMethod === "Bank account" && details.bankAccount?.endsWith("0000");
+    updateOrder(orderId, (order) => ({
+      ...order,
+      status: "Cancelled",
+      cancelledAt,
+      cancellation: { ...details, scope: "Full order", confirmedAt: cancelledAt },
+      refund: {
+        amount: order.total,
+        method: details.refundMethod || "Original payment method",
+        type: "Full refund",
+        reference: `RF${Date.now().toString().slice(-10)}`,
+        status: order.paymentMethod === "cod" ? "Not applicable" : refundFailed ? "Refund failed" : details.refundMethod === "MarketSphere Wallet" ? "Refund completed" : "Refund initiated",
+        failureReason: refundFailed ? "Bank account verification failed. Check the account details and retry." : null,
+        bankAccount: details.refundMethod === "Bank account" ? `Ending ${details.bankAccount?.slice(-4)}` : null,
+        initiatedAt: cancelledAt,
+        estimate: order.paymentMethod === "cod" ? null : "5-7 business days",
+        timeline: [{ label: "Refund initiated", date: cancelledAt }],
+      },
+    }));
+    setNotification("Order cancelled");
+  }, [updateOrder]);
+
+  const cancelOrderItem = useCallback((orderId, itemName, details = {}) => {
+    updateOrder(orderId, (order) => ({
+      ...order,
+      items: order.items.map((item) => item.name === itemName ? {
+        ...item,
+        itemStatus: "Cancelled",
+        cancellation: { ...details, confirmedAt: new Date().toISOString() },
+        refund: {
+          amount: item.price * (item.qty || 1),
+          method: details.refundMethod || "Original payment method",
+          type: "Partial refund",
+          reference: `RF${Date.now().toString().slice(-10)}`,
+          status: order.paymentMethod === "cod" ? "Not applicable" : details.refundMethod === "MarketSphere Wallet" ? "Refund completed" : "Refund initiated",
+          estimate: order.paymentMethod === "cod" ? null : "5-7 business days",
+          timeline: [{ label: "Refund initiated", date: new Date().toISOString() }],
+        },
+      } : item),
+    }));
+    setNotification(`${itemName} cancelled`);
+  }, [updateOrder]);
+
+  const retryRefund = useCallback((orderId) => {
+    updateOrder(orderId, (order) => ({
+      ...order,
+      refund: {
+        ...order.refund,
+        status: "Refund initiated",
+        failureReason: null,
+        retriedAt: new Date().toISOString(),
+        timeline: [...(order.refund?.timeline || []), { label: "Refund retry initiated", date: new Date().toISOString() }],
+      },
+    }));
+    setNotification("Refund retry initiated");
+  }, [updateOrder]);
+
+  const createReturnRequest = useCallback((request) => {
+    const createdAt = new Date().toISOString();
+    const record = {
+      ...request,
+      id: `RET${Date.now().toString().slice(-9)}`,
+      createdAt,
+      status: "Request submitted",
+      timeline: [{ label: "Request submitted", date: createdAt, done: true }],
+    };
+    setReturnRequests((items) => [record, ...items]);
+    setNotification(`${request.type} request submitted`);
+    return record;
+  }, []);
+
+  const updateReturnRequest = useCallback((requestId, updates) => {
+    setReturnRequests((items) => items.map((request) => request.id === requestId ? { ...request, ...updates } : request));
+  }, []);
+
+  const cancelReturnRequest = useCallback((requestId) => {
+    updateReturnRequest(requestId, {
+      status: "Cancelled",
+      cancelledAt: new Date().toISOString(),
+    });
+    setNotification("Return request cancelled");
+  }, [updateReturnRequest]);
+
+  const reorder = useCallback((orderId) => {
+    const order = orders.find((item) => item.id === orderId);
+    if (!order?.items?.length) return;
+    setCart((items) => {
+      const next = [...items];
+      order.items.filter((item) => item.itemStatus !== "Cancelled").forEach((product) => {
+        const existing = next.find((item) => item.name === product.name);
+        if (existing) existing.qty = Math.min(5, (existing.qty || 1) + (product.qty || 1));
+        else next.push({ ...product });
+      });
+      return next;
+    });
+    setNotification("Order items added to your bag");
+  }, [orders]);
+
   const latestOrder = orders[0] || null;
 
   const value = useMemo(() => ({
@@ -168,16 +279,23 @@ export function ShopProvider({ children }) {
     addToCompare,
     cart,
     cartTotal,
+    cancelOrder,
+    cancelOrderItem,
+    cancelReturnRequest,
     clearNotification,
     compareProducts,
+    createReturnRequest,
     latestOrder,
     notification,
     orders,
     priceLimit,
     products,
     query,
+    returnRequests,
     removeFromCart,
     removeFromCompare,
+    reorder,
+    retryRefund,
     placeOrder,
     moveSavedToCart,
     moveToWishlist,
@@ -190,6 +308,8 @@ export function ShopProvider({ children }) {
     sortBy,
     toggleWishlist,
     updateCartVariant,
+    updateOrder,
+    updateReturnRequest,
     updateQty,
     wishlist,
   }), [
@@ -198,16 +318,23 @@ export function ShopProvider({ children }) {
     addToCompare,
     cart,
     cartTotal,
+    cancelOrder,
+    cancelOrderItem,
+    cancelReturnRequest,
     clearNotification,
     compareProducts,
+    createReturnRequest,
     latestOrder,
     notification,
     orders,
     priceLimit,
     products,
     query,
+    returnRequests,
     removeFromCart,
     removeFromCompare,
+    reorder,
+    retryRefund,
     placeOrder,
     moveSavedToCart,
     moveToWishlist,
@@ -216,6 +343,8 @@ export function ShopProvider({ children }) {
     sortBy,
     toggleWishlist,
     updateCartVariant,
+    updateOrder,
+    updateReturnRequest,
     updateQty,
     wishlist,
   ]);
