@@ -5,6 +5,7 @@ import {
   BrandStrip,
   CategoryGrid,
   Newsletter,
+  PersonalizedEdit,
   ProductShelf,
   SaleBanner,
   ShopTheLook,
@@ -25,6 +26,7 @@ export default function HomePage() {
       <BenefitStrip />
       <CategoryGrid categories={categories} />
       <ProductShelf title="New arrivals" products={arrivals} onAdd={addToCart} onWishlist={toggleWishlist} />
+      <PersonalizedEdit products={[...deals, ...trending]} onAdd={addToCart} onWishlist={toggleWishlist} />
       <TrendingStories />
       <BrandStrip brands={brands} />
       <SaleBanner />

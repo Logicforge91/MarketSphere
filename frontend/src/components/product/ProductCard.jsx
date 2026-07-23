@@ -16,7 +16,7 @@ function ProductCard({ product, onAdd, onWishlist }) {
           </button>
         )}
         <Link to={productPath} aria-label={`View ${product.name}`}>
-          <img src={product.image} alt={product.name} loading="lazy" />
+          <img src={product.image} alt={product.name} width="600" height="750" loading="lazy" />
         </Link>
       </div>
       <Link className="product-card-title" to={productPath}><h3>{product.name}</h3></Link>

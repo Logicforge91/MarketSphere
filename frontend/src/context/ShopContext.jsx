@@ -11,6 +11,7 @@ export function ShopProvider({ children }) {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [priceLimit, setPriceLimit] = useState(80000);
+  const [notification, setNotification] = useState("");
 
   const products = useMemo(() => {
     return catalog.filter((product) => {
@@ -28,6 +29,7 @@ export function ShopProvider({ children }) {
       }
       return [...items, { ...product, qty: 1 }];
     });
+    setNotification(`${product.name} added to your bag`);
   }, []);
 
   const removeFromCart = useCallback((name) => {
@@ -39,11 +41,14 @@ export function ShopProvider({ children }) {
   }, []);
 
   const toggleWishlist = useCallback((product) => {
+    const exists = wishlist.some((item) => item.name === product.name);
     setWishlist((items) => {
-      const exists = items.some((item) => item.name === product.name);
       return exists ? items.filter((item) => item.name !== product.name) : [...items, product];
     });
-  }, []);
+    setNotification(exists ? `${product.name} removed from saved items` : `${product.name} saved for later`);
+  }, [wishlist]);
+
+  const clearNotification = useCallback(() => setNotification(""), []);
 
   const cartTotal = cart.reduce((total, item) => total + item.price * (item.qty || 1), 0);
 
@@ -52,6 +57,8 @@ export function ShopProvider({ children }) {
     addToCart,
     cart,
     cartTotal,
+    clearNotification,
+    notification,
     priceLimit,
     products,
     query,
@@ -67,6 +74,8 @@ export function ShopProvider({ children }) {
     addToCart,
     cart,
     cartTotal,
+    clearNotification,
+    notification,
     priceLimit,
     products,
     query,
