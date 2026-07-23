@@ -109,13 +109,13 @@ export function DealOfTheDay({ product, onAdd }) {
 }
 
 const storeData = [
-  { name: "The Modern Wardrobe", category: "Contemporary fashion", image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=700&q=80" },
-  { name: "Sole Society", category: "Sneakers and footwear", image: "https://images.unsplash.com/photo-1555529771-35a38bb54c3f?auto=format&fit=crop&w=700&q=80" },
-  { name: "The Beauty Room", category: "Skin, scent and colour", image: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9f?auto=format&fit=crop&w=700&q=80" },
+  { name: "The Modern Wardrobe", slug: "modern-wardrobe", category: "Contemporary fashion", image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=700&q=80" },
+  { name: "Sole Society", slug: "sole-society", category: "Sneakers and footwear", image: "https://images.unsplash.com/photo-1555529771-35a38bb54c3f?auto=format&fit=crop&w=700&q=80" },
+  { name: "The Beauty Room", slug: "beauty-room", category: "Skin, scent and colour", image: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9f?auto=format&fit=crop&w=700&q=80" },
 ];
 
 export function FeaturedStores() {
-  return <section className="velora-section"><SectionHeading title="Featured stores" action="Explore stores" /><div className="featured-stores">{storeData.map((item) => <Link to="/products" key={item.name}><img src={item.image} alt="" loading="lazy" /><div><Store size={17} /><span>{item.category}</span><h3>{item.name}</h3><small>Visit store <ArrowRight size={13} /></small></div></Link>)}</div></section>;
+  return <section className="velora-section"><SectionHeading title="Featured stores" action="Compare sellers" to="/sellers/compare" /><div className="featured-stores">{storeData.map((item) => <Link to={`/store/${item.slug}`} key={item.name}><img src={item.image} alt="" loading="lazy" /><div><Store size={17} /><span>{item.category}</span><h3>{item.name}</h3><small>Visit store <ArrowRight size={13} /></small></div></Link>)}</div></section>;
 }
 
 export function PersonalizedOffers() {

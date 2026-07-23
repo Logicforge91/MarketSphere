@@ -6,6 +6,7 @@ const lazyPage = (loader, name = "default") => lazy(() => loader().then((module)
 
 const HomePage = lazyPage(() => import("./pages/HomePage.jsx"));
 const ListingPage = lazyPage(() => import("./pages/ListingPage.jsx"));
+const CategoryPage = lazyPage(() => import("./pages/CategoryPage.jsx"));
 const SearchPage = lazyPage(() => import("./pages/SearchPage.jsx"));
 const ProductPage = lazyPage(() => import("./pages/ProductPage.jsx"));
 const CartPage = lazyPage(() => import("./pages/CartPage.jsx"));
@@ -14,6 +15,9 @@ const OrdersPage = lazyPage(() => import("./pages/OrdersPage.jsx"));
 const WishlistPage = lazyPage(() => import("./pages/WishlistPage.jsx"));
 const AuthPage = lazyPage(() => import("./pages/AuthPage.jsx"));
 const AccountPage = lazyPage(() => import("./pages/AccountPage.jsx"));
+const sellerPages = () => import("./pages/SellerPages.jsx");
+const StoreProfilePage = lazyPage(sellerPages, "StoreProfilePage");
+const SellerComparisonPage = lazyPage(sellerPages, "SellerComparisonPage");
 const authenticationPages = () => import("./pages/AuthenticationPages.jsx");
 const RegisterPage = lazyPage(authenticationPages, "RegisterPage");
 const OtpLoginPage = lazyPage(authenticationPages, "OtpLoginPage");
@@ -61,6 +65,7 @@ export default function App() {
         <Route element={<AppShell />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<ListingPage />} />
+          <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/product/:slug" element={<ProductPage />} />
           <Route path="/cart" element={<CartPage />} />
@@ -79,6 +84,8 @@ export default function App() {
           <Route path="/sessions" element={<SessionManagementPage />} />
           <Route path="/delete-account" element={<DeleteAccountPage />} />
           <Route path="/account" element={<AccountPage />} />
+          <Route path="/store/:slug" element={<StoreProfilePage />} />
+          <Route path="/sellers/compare" element={<SellerComparisonPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/wallet" element={<WalletPage />} />
           <Route path="/rewards" element={<RewardsPage />} />

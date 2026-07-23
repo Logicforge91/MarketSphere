@@ -8,13 +8,18 @@ import {
   CreditCard,
   Headphones,
   Home,
+  LocateFixed,
   Mail,
   MapPin,
   PackageCheck,
   Phone,
   Plus,
+  Save,
+  Search,
   ShieldCheck,
   Truck,
+  Trash2,
+  X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { brands } from "../data/shopData";
@@ -31,24 +36,126 @@ function InnerHeading({ eyebrow, title, copy, action }) {
 }
 
 export function AddressBookPage() {
-  const addresses = [
-    { icon: Home, label: "Home", name: "Rahul Sharma", address: "125, 4th Block, Koramangala, Bengaluru, Karnataka - 560034", phone: "+91 98765 43210", primary: true },
-    { icon: Building2, label: "Office", name: "Rahul Sharma", address: "88, Brigade Road, MG Road, Bengaluru, Karnataka - 560001", phone: "+91 87654 32100" },
-  ];
+  const storageKey = "marketsphere:addresses";
+  const emptyAddress = { id: "", type: "Home", name: "", phone: "", line1: "", area: "", city: "", state: "", pincode: "", landmark: "", instructions: "", latitude: null, longitude: null, primary: false };
+  const [addresses, setAddresses] = useState(() => {
+    try {
+      return JSON.parse(window.localStorage.getItem(storageKey)) || [
+        { ...emptyAddress, id: "home-1", type: "Home", name: "Rahul Sharma", phone: "+91 98765 43210", line1: "125, 4th Block", area: "Koramangala", city: "Bengaluru", state: "Karnataka", pincode: "560034", landmark: "Near Forum Mall", instructions: "Call on arrival", primary: true },
+        { ...emptyAddress, id: "work-1", type: "Work", name: "Rahul Sharma", phone: "+91 87654 32100", line1: "88, Brigade Road", area: "MG Road", city: "Bengaluru", state: "Karnataka", pincode: "560001", primary: false },
+      ];
+    } catch {
+      return [];
+    }
+  });
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState(emptyAddress);
+  const [locating, setLocating] = useState(false);
+  const [notice, setNotice] = useState("");
+  const serviceable = /^(110|400|560|600)\d{3}$/.test(form.pincode);
+  const validPincode = /^\d{6}$/.test(form.pincode);
+  const suggestions = [
+    "Koramangala, Bengaluru, Karnataka",
+    "MG Road, Bengaluru, Karnataka",
+    "Bandra West, Mumbai, Maharashtra",
+    "Connaught Place, New Delhi",
+  ].filter((item) => form.area.length > 2 && item.toLowerCase().includes(form.area.toLowerCase())).slice(0, 3);
+
+  function persist(next) {
+    setAddresses(next);
+    window.localStorage.setItem(storageKey, JSON.stringify(next));
+  }
+
+  function openEditor(address = null) {
+    setForm(address ? { ...address } : { ...emptyAddress, id: `address-${Date.now()}` });
+    setEditing(address?.id || "new");
+    setNotice("");
+  }
+
+  function saveAddress(event) {
+    event.preventDefault();
+    if (!validPincode || !serviceable) return;
+    let next = addresses.some((item) => item.id === form.id) ? addresses.map((item) => item.id === form.id ? form : item) : [...addresses, form];
+    if (form.primary || next.length === 1) next = next.map((item) => ({ ...item, primary: item.id === form.id }));
+    persist(next);
+    setEditing(null);
+    setNotice("Address saved successfully");
+  }
+
+  function removeAddress(id) {
+    const next = addresses.filter((item) => item.id !== id);
+    if (next.length && !next.some((item) => item.primary)) next[0] = { ...next[0], primary: true };
+    persist(next);
+    setNotice("Address deleted");
+  }
+
+  function setDefault(id) {
+    persist(addresses.map((item) => ({ ...item, primary: item.id === id })));
+    setNotice("Default address updated");
+  }
+
+  function detectLocation() {
+    if (!navigator.geolocation) {
+      setNotice("Location detection is unavailable in this browser");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(({ coords }) => {
+      setForm((current) => ({ ...current, latitude: coords.latitude, longitude: coords.longitude, area: current.area || "Current map location" }));
+      setLocating(false);
+      setNotice("Location pin updated");
+    }, () => {
+      setLocating(false);
+      setNotice("Location permission was not granted");
+    }, { timeout: 8000 });
+  }
+
+  function selectSuggestion(value) {
+    const [area, city, state] = value.split(", ");
+    setForm({ ...form, area, city, state });
+  }
+
+  function selectMapPoint(event) {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width;
+    const y = (event.clientY - bounds.top) / bounds.height;
+    setForm({ ...form, latitude: 12.8 + (1 - y) * .4, longitude: 77.4 + x * .5 });
+    setNotice("Map pin selected");
+  }
+
+  const typeIcons = { Home, Work: Building2, Other: MapPin };
 
   return (
-    <main className="real-page inner-page">
-      <InnerHeading eyebrow="My account" title="Address book" copy="Manage delivery locations for a faster checkout." action={<button className="primary"><Plus size={16} /> Add address</button>} />
+    <main className="real-page inner-page advanced-address-page">
+      <InnerHeading eyebrow="My account" title="Address book" copy="Manage saved locations, delivery details and serviceability." action={<button className="primary" onClick={() => openEditor()}><Plus size={16} /> Add address</button>} />
+      {notice && <p className="address-notice" role="status"><Check size={14} /> {notice}</p>}
       <div className="address-grid">
-        {addresses.map(({ icon: Icon, ...address }) => (
-          <article className="address-card" key={address.label}>
-            <div className="address-card-heading"><span><Icon size={17} /> {address.label}</span>{address.primary && <b>Default</b>}</div>
-            <strong>{address.name}</strong><p>{address.address}</p><small>{address.phone}</small>
-            <footer><button>Edit</button><button>Delete</button></footer>
+        {addresses.map((address) => {
+          const Icon = typeIcons[address.type] || MapPin;
+          return <article className="address-card" key={address.id}>
+            <div className="address-card-heading"><span><Icon size={17} /> {address.type}</span>{address.primary && <b>Default</b>}</div>
+            <strong>{address.name}</strong><p>{address.line1}, {address.area}, {address.city}, {address.state} - {address.pincode}</p>{address.landmark && <small>Landmark: {address.landmark}</small>}<small>{address.phone}</small>{address.instructions && <em>{address.instructions}</em>}
+            <footer><button onClick={() => openEditor(address)}>Edit</button>{!address.primary && <button onClick={() => setDefault(address.id)}>Set default</button>}<button onClick={() => removeAddress(address.id)}>Delete</button></footer>
           </article>
-        ))}
-        <button className="add-new-card"><Plus /><span>Add a new address</span></button>
+        })}
+        <button className="add-new-card" onClick={() => openEditor()}><Plus /><span>Add a new address</span></button>
       </div>
+
+      {editing && <div className="address-editor-backdrop" onClick={() => setEditing(null)}><section className="address-editor" onClick={(event) => event.stopPropagation()}>
+        <header><div><span>{editing === "new" ? "New delivery location" : "Update location"}</span><h2>{editing === "new" ? "Add address" : "Edit address"}</h2></div><button onClick={() => setEditing(null)} aria-label="Close"><X /></button></header>
+        <form onSubmit={saveAddress}>
+          <fieldset className="address-type-picker"><legend>Address type</legend>{["Home", "Work", "Other"].map((type) => { const Icon = typeIcons[type]; return <button className={form.type === type ? "active" : ""} type="button" onClick={() => setForm({ ...form, type })} key={type}><Icon size={15} /> {type}</button>; })}</fieldset>
+          <div className="address-form-row"><label>Full name<input required autoComplete="name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></label><label>Mobile number<input required autoComplete="tel" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} /></label></div>
+          <label>Flat, house or building<input required autoComplete="address-line1" value={form.line1} onChange={(event) => setForm({ ...form, line1: event.target.value })} /></label>
+          <label className="autocomplete-field">Area or locality<div><Search size={14} /><input required autoComplete="address-line2" value={form.area} onChange={(event) => setForm({ ...form, area: event.target.value })} /></div>{suggestions.length > 0 && <section>{suggestions.map((item) => <button type="button" onClick={() => selectSuggestion(item)} key={item}><MapPin size={13} /> {item}</button>)}</section>}</label>
+          <div className="address-form-row"><label>City<input required value={form.city} onChange={(event) => setForm({ ...form, city: event.target.value })} /></label><label>State<input required value={form.state} onChange={(event) => setForm({ ...form, state: event.target.value })} /></label></div>
+          <label>Pincode<input required inputMode="numeric" maxLength="6" value={form.pincode} onChange={(event) => setForm({ ...form, pincode: event.target.value.replace(/\D/g, "") })} />{form.pincode && <small className={serviceable ? "serviceable" : "not-serviceable"}>{!validPincode ? "Enter a valid 6-digit PIN" : serviceable ? "Delivery available at this PIN code" : "We do not currently deliver to this PIN code"}</small>}</label>
+          <div className="address-form-row"><label>Landmark<input value={form.landmark} onChange={(event) => setForm({ ...form, landmark: event.target.value })} placeholder="Optional" /></label><label>Delivery instructions<input value={form.instructions} onChange={(event) => setForm({ ...form, instructions: event.target.value })} placeholder="Gate, floor, call preferences" /></label></div>
+          <section className="address-map"><div className="map-grid" onClick={selectMapPoint} role="button" tabIndex="0" aria-label="Select address location on map"><i className="map-pin" style={{ left: form.longitude ? "58%" : "50%", top: form.latitude ? "42%" : "50%" }}><MapPin /></i></div><div><strong>Pin address on map</strong><span>{form.latitude ? `${form.latitude.toFixed(4)}, ${form.longitude.toFixed(4)}` : "Click the map or detect your location"}</span><button type="button" onClick={detectLocation}><LocateFixed size={14} /> {locating ? "Detecting..." : "Use current location"}</button></div></section>
+          <label className="default-address-check"><input type="checkbox" checked={form.primary} onChange={(event) => setForm({ ...form, primary: event.target.checked })} /> Set as default delivery address</label>
+          <footer><button type="button" className="secondary" onClick={() => setEditing(null)}>Cancel</button><button className="primary" disabled={!serviceable}><Save size={15} /> Save address</button></footer>
+        </form>
+      </section></div>}
     </main>
   );
 }

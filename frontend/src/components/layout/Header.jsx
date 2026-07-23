@@ -5,12 +5,12 @@ import { useShop } from "../../context/ShopContext";
 
 const navigation = [
   { label: "New in", to: "/products?mode=new" },
-  { label: "Women", to: "/products?category=Women" },
-  { label: "Men", to: "/products?category=Men" },
-  { label: "Bags", to: "/products?category=Bags" },
-  { label: "Shoes", to: "/products?category=Shoes" },
-  { label: "Accessories", to: "/products?category=Accessories" },
-  { label: "Beauty", to: "/products?category=Beauty" },
+  { label: "Women", to: "/category/women" },
+  { label: "Men", to: "/category/men" },
+  { label: "Bags", to: "/category/bags" },
+  { label: "Shoes", to: "/category/shoes" },
+  { label: "Accessories", to: "/category/accessories" },
+  { label: "Beauty", to: "/category/beauty" },
   { label: "Sale", to: "/products?mode=deals", className: "sale-link" },
 ];
 
