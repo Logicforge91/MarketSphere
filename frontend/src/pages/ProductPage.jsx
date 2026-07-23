@@ -11,7 +11,7 @@ import { useShop } from "../context/ShopContext";
 
 export default function ProductPage() {
   const { slug } = useParams();
-  const { addToCart, toggleWishlist } = useShop();
+  const { addToCart, addToCompare, toggleWishlist } = useShop();
   const product = getProductBySlug(slug);
 
   if (!product) {
@@ -29,11 +29,13 @@ export default function ProductPage() {
 
   return (
     <main className="desktop-page product-page real-product-page">
-      <ProductDetail product={product} onAdd={addToCart} />
+      <ProductDetail product={product} onAdd={addToCart} onCompare={addToCompare} onWishlist={toggleWishlist} />
       <BenefitRow />
-      <ReviewsAndBundles />
+      <ReviewsAndBundles product={product} bundleProducts={catalog.filter((item) => item.slug !== product.slug).slice(0, 2)} onAdd={addToCart} />
       <SectionTitle title="You may also like" action={<SlidersHorizontal size={16} />} />
       <div className="product-grid compact">{recommendations.map((item) => <ProductCard product={item} onAdd={addToCart} onWishlist={toggleWishlist} key={item.id} />)}</div>
+      <SectionTitle title="Similar products" action={<SlidersHorizontal size={16} />} />
+      <div className="product-grid compact">{catalog.filter((item) => item.slug !== product.slug).slice(5, 10).map((item) => <ProductCard product={item} onAdd={addToCart} onWishlist={toggleWishlist} key={item.id} />)}</div>
     </main>
   );
 }

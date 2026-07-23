@@ -16,6 +16,8 @@ function readStoredState(key, fallback) {
 export function ShopProvider({ children }) {
   const [cart, setCart] = useState(() => readStoredState("marketsphere:cart", cartItems));
   const [wishlist, setWishlist] = useState(() => readStoredState("marketsphere:wishlist", [shoeProducts[0], mobileProducts[1]]));
+  const [savedForLater, setSavedForLater] = useState(() => readStoredState("marketsphere:saved-for-later", []));
+  const [compareProducts, setCompareProducts] = useState(() => readStoredState("marketsphere:compare", shoeProducts.slice(0, 3)));
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [priceLimit, setPriceLimit] = useState(80000);
@@ -41,11 +43,20 @@ export function ShopProvider({ children }) {
 
   useEffect(() => {
     window.localStorage.setItem("marketsphere:cart", JSON.stringify(cart));
+    window.localStorage.setItem("marketsphere:cart-activity", new Date().toISOString());
   }, [cart]);
 
   useEffect(() => {
     window.localStorage.setItem("marketsphere:wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
+
+  useEffect(() => {
+    window.localStorage.setItem("marketsphere:saved-for-later", JSON.stringify(savedForLater));
+  }, [savedForLater]);
+
+  useEffect(() => {
+    window.localStorage.setItem("marketsphere:compare", JSON.stringify(compareProducts));
+  }, [compareProducts]);
 
   useEffect(() => {
     window.localStorage.setItem("marketsphere:orders", JSON.stringify(orders));
@@ -55,9 +66,9 @@ export function ShopProvider({ children }) {
     setCart((items) => {
       const existing = items.find((item) => item.name === product.name);
       if (existing) {
-        return items.map((item) => item.name === product.name ? { ...item, qty: (item.qty || 1) + 1 } : item);
+        return items.map((item) => item.name === product.name ? { ...item, qty: (item.qty || 1) + (product.qty || 1), variant: product.variant || item.variant, sku: product.sku || item.sku } : item);
       }
-      return [...items, { ...product, qty: 1 }];
+      return [...items, { ...product, qty: product.qty || 1 }];
     });
     setNotification(`${product.name} added to your bag`);
   }, []);
@@ -67,7 +78,39 @@ export function ShopProvider({ children }) {
   }, []);
 
   const updateQty = useCallback((name, qty) => {
-    setCart((items) => items.map((item) => item.name === name ? { ...item, qty: Math.max(1, qty) } : item));
+    setCart((items) => items.map((item) => item.name === name ? { ...item, qty: Math.min(5, Math.max(1, qty)) } : item));
+  }, []);
+
+  const updateCartVariant = useCallback((name, variant) => {
+    setCart((items) => items.map((item) => item.name === name ? { ...item, variant, sku: `${item.id || "MS"}-${Object.values(variant).join("-")}` } : item));
+    setNotification("Product options updated");
+  }, []);
+
+  const saveForLater = useCallback((name) => {
+    setCart((items) => {
+      const item = items.find((product) => product.name === name);
+      if (item) setSavedForLater((saved) => [item, ...saved.filter((product) => product.name !== name)]);
+      return items.filter((product) => product.name !== name);
+    });
+    setNotification("Product saved for later");
+  }, []);
+
+  const moveSavedToCart = useCallback((name) => {
+    setSavedForLater((items) => {
+      const item = items.find((product) => product.name === name);
+      if (item) setCart((cartItems) => [...cartItems.filter((product) => product.name !== name), item]);
+      return items.filter((product) => product.name !== name);
+    });
+    setNotification("Product moved to cart");
+  }, []);
+
+  const moveToWishlist = useCallback((name) => {
+    setCart((items) => {
+      const item = items.find((product) => product.name === name);
+      if (item) setWishlist((saved) => [item, ...saved.filter((product) => product.name !== name)]);
+      return items.filter((product) => product.name !== name);
+    });
+    setNotification("Product moved to wishlist");
   }, []);
 
   const toggleWishlist = useCallback((product) => {
@@ -80,9 +123,25 @@ export function ShopProvider({ children }) {
 
   const clearNotification = useCallback(() => setNotification(""), []);
 
+  const addToCompare = useCallback((product) => {
+    setCompareProducts((items) => {
+      if (items.some((item) => item.name === product.name)) return items;
+      if (items.length >= 4) {
+        setNotification("You can compare up to four products");
+        return items;
+      }
+      setNotification(`${product.name} added to comparison`);
+      return [...items, product];
+    });
+  }, []);
+
+  const removeFromCompare = useCallback((name) => {
+    setCompareProducts((items) => items.filter((item) => item.name !== name));
+  }, []);
+
   const cartTotal = cart.reduce((total, item) => total + item.price * (item.qty || 1), 0);
 
-  const placeOrder = useCallback(({ address, paymentMethod }) => {
+  const placeOrder = useCallback(({ address, paymentMethod, total, ...checkoutDetails }) => {
     if (!cart.length) return null;
     const order = {
       address,
@@ -91,8 +150,9 @@ export function ShopProvider({ children }) {
       image: cart[0].image,
       items: cart,
       paymentMethod,
+      ...checkoutDetails,
       status: "Confirmed",
-      total: cart.reduce((total, item) => total + item.price * (item.qty || 1), 0),
+      total: total ?? cart.reduce((sum, item) => sum + item.price * (item.qty || 1), 0),
     };
     setOrders((items) => [order, ...items]);
     setCart([]);
@@ -105,9 +165,11 @@ export function ShopProvider({ children }) {
   const value = useMemo(() => ({
     activeCategory,
     addToCart,
+    addToCompare,
     cart,
     cartTotal,
     clearNotification,
+    compareProducts,
     latestOrder,
     notification,
     orders,
@@ -115,21 +177,29 @@ export function ShopProvider({ children }) {
     products,
     query,
     removeFromCart,
+    removeFromCompare,
     placeOrder,
+    moveSavedToCart,
+    moveToWishlist,
+    saveForLater,
+    savedForLater,
     setActiveCategory,
     setPriceLimit,
     setQuery,
     setSortBy,
     sortBy,
     toggleWishlist,
+    updateCartVariant,
     updateQty,
     wishlist,
   }), [
     activeCategory,
     addToCart,
+    addToCompare,
     cart,
     cartTotal,
     clearNotification,
+    compareProducts,
     latestOrder,
     notification,
     orders,
@@ -137,9 +207,15 @@ export function ShopProvider({ children }) {
     products,
     query,
     removeFromCart,
+    removeFromCompare,
     placeOrder,
+    moveSavedToCart,
+    moveToWishlist,
+    saveForLater,
+    savedForLater,
     sortBy,
     toggleWishlist,
+    updateCartVariant,
     updateQty,
     wishlist,
   ]);

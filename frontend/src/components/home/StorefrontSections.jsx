@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { ArrowLeft, ArrowRight, Instagram, Mail } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { ArrowLeft, ArrowRight, Clock3, Instagram, Mail, Quote, Store, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProductCard from "../product/ProductCard";
 import { heroSlides, lookbookContent, saleContent, socialGallery, storefrontBenefits, trendStories } from "../../data/marketSphereContent";
@@ -73,6 +73,63 @@ export function ProductShelf({ title, products, onAdd, onWishlist }) {
       </div>
     </section>
   );
+}
+
+function useCountdown(hours = 8) {
+  const [seconds, setSeconds] = useState(hours * 3600 + 23 * 60 + 42);
+  useEffect(() => {
+    const timer = window.setInterval(() => setSeconds((value) => value > 0 ? value - 1 : hours * 3600), 1000);
+    return () => window.clearInterval(timer);
+  }, [hours]);
+  const pad = (value) => String(value).padStart(2, "0");
+  return { hours: pad(Math.floor(seconds / 3600)), minutes: pad(Math.floor((seconds % 3600) / 60)), seconds: pad(seconds % 60) };
+}
+
+export function FlashSale({ products, onAdd, onWishlist }) {
+  const countdown = useCountdown(5);
+  return (
+    <section className="home-sale-section">
+      <div className="sale-section-heading">
+        <div><span><Tag size={14} /> Flash sale</span><h2>Prices dropping now</h2></div>
+        <div className="sale-countdown"><small>Ends in</small><b>{countdown.hours}</b><i>:</i><b>{countdown.minutes}</b><i>:</i><b>{countdown.seconds}</b></div>
+      </div>
+      <div className="velora-product-grid">{products.slice(0, 4).map((product) => <ProductCard product={product} onAdd={onAdd} onWishlist={onWishlist} key={product.name} />)}</div>
+    </section>
+  );
+}
+
+export function DealOfTheDay({ product, onAdd }) {
+  const countdown = useCountdown(11);
+  return (
+    <section className="daily-deal">
+      <img src={product.image} alt={product.name} loading="lazy" />
+      <div><span>Deal of the day</span><h2>{product.name}</h2><p>A standout MarketSphere pick at its best price today. Limited quantities available.</p><div className="daily-deal-price"><strong>Rs. {product.price.toLocaleString("en-IN")}</strong><del>Rs. {product.oldPrice.toLocaleString("en-IN")}</del></div><div className="compact-countdown"><Clock3 size={15} /> {countdown.hours}:{countdown.minutes}:{countdown.seconds} remaining</div><button className="primary" type="button" onClick={() => onAdd(product)}>Add to bag</button></div>
+    </section>
+  );
+}
+
+const storeData = [
+  { name: "The Modern Wardrobe", slug: "modern-wardrobe", category: "Contemporary fashion", image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=700&q=80" },
+  { name: "Sole Society", slug: "sole-society", category: "Sneakers and footwear", image: "https://images.unsplash.com/photo-1555529771-35a38bb54c3f?auto=format&fit=crop&w=700&q=80" },
+  { name: "The Beauty Room", slug: "beauty-room", category: "Skin, scent and colour", image: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9f?auto=format&fit=crop&w=700&q=80" },
+];
+
+export function FeaturedStores() {
+  return <section className="velora-section"><SectionHeading title="Featured stores" action="Compare sellers" to="/sellers/compare" /><div className="featured-stores">{storeData.map((item) => <Link to={`/store/${item.slug}`} key={item.name}><img src={item.image} alt="" loading="lazy" /><div><Store size={17} /><span>{item.category}</span><h3>{item.name}</h3><small>Visit store <ArrowRight size={13} /></small></div></Link>)}</div></section>;
+}
+
+export function PersonalizedOffers() {
+  return <section className="personal-offers" aria-labelledby="personal-offers-title"><div><span>Just for you</span><h2 id="personal-offers-title">More value, matched to your shop</h2><p>Sign in to unlock member pricing and offers shaped by your favourite categories.</p></div><div className="offer-coupons"><article><strong>20% off</strong><span>Fashion first order</span><small>Code: HELLO20</small></article><article><strong>Rs. 500 back</strong><span>On your next UPI order</span><small>Minimum spend applies</small></article></div><Link className="secondary" to="/login">Unlock my offers</Link></section>;
+}
+
+const testimonials = [
+  { quote: "The recommendations feel genuinely useful, and my order arrived earlier than promised.", name: "Ananya Mehta", detail: "Verified customer, Mumbai" },
+  { quote: "Easy returns and clear tracking make MarketSphere my first stop for everyday fashion.", name: "Rhea Kapoor", detail: "Member since 2024" },
+  { quote: "I found three independent labels I had never seen elsewhere. The curation is excellent.", name: "Ishita Rao", detail: "Verified customer, Bengaluru" },
+];
+
+export function Testimonials() {
+  return <section className="velora-section testimonials-section"><SectionHeading title="Loved by our customers" action="Our story" to="/about" /><div className="testimonial-grid">{testimonials.map((item) => <article key={item.name}><Quote size={22} /><p>{item.quote}</p><strong>{item.name}</strong><small>{item.detail}</small></article>)}</div></section>;
 }
 
 const editOptions = {

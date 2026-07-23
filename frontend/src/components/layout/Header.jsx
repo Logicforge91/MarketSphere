@@ -1,31 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { Heart, Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useShop } from "../../context/ShopContext";
 
 const navigation = [
-  { label: "New in", to: "/" },
-  { label: "Women", to: "/products" },
-  { label: "Men", to: "/products" },
-  { label: "Bags", to: "/products" },
-  { label: "Shoes", to: "/products" },
-  { label: "Accessories", to: "/products" },
-  { label: "Beauty", to: "/products" },
-  { label: "Sale", to: "/search", className: "sale-link" },
+  { label: "New in", to: "/products?mode=new" },
+  { label: "Women", to: "/category/women" },
+  { label: "Men", to: "/category/men" },
+  { label: "Bags", to: "/category/bags" },
+  { label: "Shoes", to: "/category/shoes" },
+  { label: "Accessories", to: "/category/accessories" },
+  { label: "Beauty", to: "/category/beauty" },
+  { label: "Sale", to: "/products?mode=deals", className: "sale-link" },
 ];
 
 export default function Header() {
-  const { cart, query, setQuery, wishlist } = useShop();
+  const { cart, wishlist } = useShop();
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
 
-  useEffect(() => setMenuOpen(false), [location.pathname]);
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    navigate("/search");
-  }
+  useEffect(() => setMenuOpen(false), [location.pathname, location.search]);
+  const isCurrent = (to) => `${location.pathname}${location.search}` === to;
+  const navClass = (item) => `${item.className || ""} ${isCurrent(item.to) ? "active" : ""}`.trim();
 
   return (
     <header className="topbar velora-header">
@@ -34,16 +30,9 @@ export default function Header() {
         <span>Easy 7-day returns</span>
       </div>
       <div className="nav">
-        <button className="mobile-menu-trigger" type="button" aria-label="Open navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
-          <Menu size={20} />
-        </button>
+        <button className="mobile-menu-trigger" type="button" aria-label="Open navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}><Menu size={20} /></button>
         <Link to="/" className="velora-logo" aria-label="MarketSphere home">MARKETSPHERE<small>Elevate everyday</small></Link>
-        <form className="search" role="search" onSubmit={handleSubmit}>
-          <Search size={15} aria-hidden="true" />
-          <label className="sr-only" htmlFor="site-search">Search products</label>
-          <input id="site-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search products, brands and more..." />
-          {query && <button className="search-clear" type="button" aria-label="Clear search" onClick={() => setQuery("")}><X size={14} /></button>}
-        </form>
+        <div className="header-search-spacer" aria-hidden="true" />
         <div className="actions">
           <Link to="/search" aria-label="Search"><Search size={19} /></Link>
           <Link to="/wishlist" className="header-action" aria-label={`Wishlist with ${wishlist.length} items`}><Heart size={19} /><span>Wishlist</span></Link>
@@ -52,14 +41,14 @@ export default function Header() {
         </div>
       </div>
       <nav className="tabs" aria-label="Primary navigation">
-        {navigation.map((item) => <NavLink {...item} key={item.label}>{item.label}</NavLink>)}
+        {navigation.map((item) => <Link className={navClass(item)} to={item.to} key={item.label}>{item.label}</Link>)}
       </nav>
 
       <div className={`mobile-nav-backdrop ${menuOpen ? "open" : ""}`} onClick={() => setMenuOpen(false)} />
       <aside className={`mobile-nav-panel ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}>
         <div className="mobile-nav-heading"><Link to="/" className="velora-logo">MARKETSPHERE</Link><button type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)}><X /></button></div>
         <nav aria-label="Mobile navigation">
-          {navigation.map((item) => <NavLink {...item} key={item.label}>{item.label}<span>›</span></NavLink>)}
+          {navigation.map((item) => <Link className={navClass(item)} to={item.to} key={item.label}>{item.label}<span>&rsaquo;</span></Link>)}
         </nav>
         <div className="mobile-nav-account">
           <Link to="/account"><UserRound size={18} /> My account</Link>
