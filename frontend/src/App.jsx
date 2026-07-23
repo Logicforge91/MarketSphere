@@ -12,6 +12,17 @@ import ProductPage from "./pages/ProductPage.jsx";
 import SearchPage from "./pages/SearchPage.jsx";
 import WishlistPage from "./pages/WishlistPage.jsx";
 import {
+  AboutPage,
+  AddressBookPage,
+  BlogPage,
+  BrandsPage,
+  ContactPage,
+  FaqPage,
+  OrderSuccessPage,
+  PaymentMethodsPage,
+  TrackOrderPage,
+} from "./pages/CustomerPages.jsx";
+import {
   ComparePage,
   NotificationsPage,
   RecentlyViewedPage,
@@ -44,6 +55,15 @@ export default function App() {
         <Route path="/returns" element={<ReturnsPage />} />
         <Route path="/compare" element={<ComparePage />} />
         <Route path="/recently-viewed" element={<RecentlyViewedPage />} />
+        <Route path="/addresses" element={<AddressBookPage />} />
+        <Route path="/payment-methods" element={<PaymentMethodsPage />} />
+        <Route path="/track-order" element={<TrackOrderPage />} />
+        <Route path="/order-success" element={<OrderSuccessPage />} />
+        <Route path="/faq" element={<FaqPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/brands" element={<BrandsPage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

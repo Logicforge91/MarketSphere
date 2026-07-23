@@ -21,7 +21,7 @@ const accountLinks = [
   { icon: Package, label: "My orders", detail: "Track, return or buy again", to: "/orders" },
   { icon: Heart, label: "Wishlist", detail: "12 saved products", to: "/wishlist" },
   { icon: RotateCcw, label: "Returns & refunds", detail: "Manage active returns", to: "/returns" },
-  { icon: MapPin, label: "Saved addresses", detail: "2 delivery addresses", to: "/account" },
+  { icon: MapPin, label: "Saved addresses", detail: "2 delivery addresses", to: "/addresses" },
 ];
 
 const recentOrders = [
@@ -48,7 +48,7 @@ export default function AccountPage() {
           <Link className="active" to="/account"><UserRound size={18} /> Overview</Link>
           <Link to="/orders"><Package size={18} /> Orders</Link>
           <Link to="/wishlist"><Heart size={18} /> Wishlist</Link>
-          <Link to="/wallet"><WalletCards size={18} /> Payments</Link>
+          <Link to="/payment-methods"><WalletCards size={18} /> Payments</Link>
           <Link to="/notifications"><Bell size={18} /> Notifications <b>3</b></Link>
           <Link to="/support"><CircleHelp size={18} /> Help centre</Link>
           <button type="button"><LogOut size={18} /> Sign out</button>
