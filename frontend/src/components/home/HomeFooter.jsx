@@ -1,34 +1,15 @@
 import React from "react";
-import { Facebook, Instagram, Mail, MapPin, Phone, Twitter } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function HomeFooter() {
   return (
-    <footer className="home-footer">
-      <section>
-        <h3>ShopHub</h3>
-        <p>India-first ecommerce for mobiles, fashion, home, beauty and daily essentials.</p>
-        <div className="footer-social"><Facebook size={18} /><Instagram size={18} /><Twitter size={18} /></div>
-      </section>
-      <section>
-        <h4>Shop</h4>
-        <a>Mobiles</a>
-        <a>Fashion</a>
-        <a>Appliances</a>
-        <a>Grocery</a>
-      </section>
-      <section>
-        <h4>Support</h4>
-        <a>Help Center</a>
-        <a>Track Order</a>
-        <a>Returns</a>
-        <a>Payments</a>
-      </section>
-      <section>
-        <h4>Contact</h4>
-        <p><MapPin size={15} /> Bengaluru, Karnataka</p>
-        <p><Phone size={15} /> +91 98765 43210</p>
-        <p><Mail size={15} /> support@shophub.in</p>
-      </section>
+    <footer className="home-footer velora-footer">
+      <section><h3>MARKETSPHERE</h3><p>Elevate everyday with considered fashion, beauty and accessories.</p></section>
+      <section><h4>Shop</h4><Link to="/products">Women</Link><Link to="/products">Men</Link><Link to="/products">Bags</Link><Link to="/products">Shoes</Link></section>
+      <section><h4>Help</h4><Link to="/support">FAQs</Link><Link to="/orders">Shipping</Link><Link to="/returns">Returns</Link><Link to="/orders">Track order</Link></section>
+      <section><h4>About</h4><a href="#">About us</a><a href="#">Blog</a><a href="#">Careers</a><a href="#">Press</a></section>
+      <section><h4>Customer care</h4><p><Phone size={14} /> +91 98765 43210</p><p><Mail size={14} /> care@marketsphere.in</p><p><MapPin size={14} /> Mumbai, India</p></section>
     </footer>
   );
 }

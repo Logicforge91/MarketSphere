@@ -9,7 +9,7 @@ export function NotificationsPage() {
 }
 
 export function WalletPage() {
-  return <UtilityPage icon={Wallet} title="ShopHub Wallet" highlight="₹1,250" items={["Added money +₹500", "Order refund +₹750", "Order payment -₹1,299"]} />;
+  return <UtilityPage icon={Wallet} title="MarketSphere Wallet" highlight="Rs. 1,250" items={["Added money +Rs. 500", "Order refund +Rs. 750", "Order payment -Rs. 1,299"]} />;
 }
 
 export function RewardsPage() {
@@ -17,7 +17,7 @@ export function RewardsPage() {
 }
 
 export function ReferralsPage() {
-  return <UtilityPage icon={Gift} title="Refer & Earn" highlight="SHOPHUB123" items={["Rahul joined", "Jenny joined", "₹100 reward pending"]} />;
+  return <UtilityPage icon={Gift} title="Refer & Earn" highlight="MARKET123" items={["Rahul joined", "Jenny joined", "Rs. 100 reward pending"]} />;
 }
 
 export function SupportPage() {

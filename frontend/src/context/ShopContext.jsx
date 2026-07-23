@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { cartItems, deals, mobileProducts, shoeProducts } from "../data/shopData";
 
 const ShopContext = createContext(null);
@@ -20,7 +20,7 @@ export function ShopProvider({ children }) {
     });
   }, [query, priceLimit]);
 
-  function addToCart(product) {
+  const addToCart = useCallback((product) => {
     setCart((items) => {
       const existing = items.find((item) => item.name === product.name);
       if (existing) {
@@ -28,26 +28,26 @@ export function ShopProvider({ children }) {
       }
       return [...items, { ...product, qty: 1 }];
     });
-  }
+  }, []);
 
-  function removeFromCart(name) {
+  const removeFromCart = useCallback((name) => {
     setCart((items) => items.filter((item) => item.name !== name));
-  }
+  }, []);
 
-  function updateQty(name, qty) {
+  const updateQty = useCallback((name, qty) => {
     setCart((items) => items.map((item) => item.name === name ? { ...item, qty: Math.max(1, qty) } : item));
-  }
+  }, []);
 
-  function toggleWishlist(product) {
+  const toggleWishlist = useCallback((product) => {
     setWishlist((items) => {
       const exists = items.some((item) => item.name === product.name);
       return exists ? items.filter((item) => item.name !== product.name) : [...items, product];
     });
-  }
+  }, []);
 
   const cartTotal = cart.reduce((total, item) => total + item.price * (item.qty || 1), 0);
 
-  const value = {
+  const value = useMemo(() => ({
     activeCategory,
     addToCart,
     cart,
@@ -62,7 +62,19 @@ export function ShopProvider({ children }) {
     toggleWishlist,
     updateQty,
     wishlist,
-  };
+  }), [
+    activeCategory,
+    addToCart,
+    cart,
+    cartTotal,
+    priceLimit,
+    products,
+    query,
+    removeFromCart,
+    toggleWishlist,
+    updateQty,
+    wishlist,
+  ]);
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
 }

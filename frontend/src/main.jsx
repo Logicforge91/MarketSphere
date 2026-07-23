@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
 import { ShopProvider } from "./context/ShopContext.jsx";
 import "./styles.css";
+import "./theme/market-sphere-theme.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
