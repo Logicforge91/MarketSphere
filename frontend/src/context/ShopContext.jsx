@@ -22,11 +22,6 @@ export function ShopProvider({ children }) {
   const [sortBy, setSortBy] = useState("featured");
   const [notification, setNotification] = useState("");
   const [orders, setOrders] = useState(() => readStoredState("marketsphere:orders", seedOrders));
-  const [user, setUser] = useState(() => readStoredState("marketsphere:user", {
-    email: "rahul@email.com",
-    name: "Rahul Sharma",
-    phone: "+91 98765 43210",
-  }));
 
   const products = useMemo(() => {
     const filtered = catalog.filter((product) => {
@@ -55,11 +50,6 @@ export function ShopProvider({ children }) {
   useEffect(() => {
     window.localStorage.setItem("marketsphere:orders", JSON.stringify(orders));
   }, [orders]);
-
-  useEffect(() => {
-    if (user) window.localStorage.setItem("marketsphere:user", JSON.stringify(user));
-    else window.localStorage.removeItem("marketsphere:user");
-  }, [user]);
 
   const addToCart = useCallback((product) => {
     setCart((items) => {
@@ -90,22 +80,6 @@ export function ShopProvider({ children }) {
 
   const clearNotification = useCallback(() => setNotification(""), []);
 
-  const login = useCallback((credentials) => {
-    const customer = {
-      email: credentials.email,
-      name: credentials.name || credentials.email.split("@")[0],
-      phone: credentials.phone || "",
-    };
-    setUser(customer);
-    setNotification(`Welcome back, ${customer.name}`);
-    return customer;
-  }, []);
-
-  const logout = useCallback(() => {
-    setUser(null);
-    setNotification("You have signed out");
-  }, []);
-
   const cartTotal = cart.reduce((total, item) => total + item.price * (item.qty || 1), 0);
 
   const placeOrder = useCallback(({ address, paymentMethod }) => {
@@ -135,8 +109,6 @@ export function ShopProvider({ children }) {
     cartTotal,
     clearNotification,
     latestOrder,
-    login,
-    logout,
     notification,
     orders,
     priceLimit,
@@ -151,7 +123,6 @@ export function ShopProvider({ children }) {
     sortBy,
     toggleWishlist,
     updateQty,
-    user,
     wishlist,
   }), [
     activeCategory,
@@ -160,8 +131,6 @@ export function ShopProvider({ children }) {
     cartTotal,
     clearNotification,
     latestOrder,
-    login,
-    logout,
     notification,
     orders,
     priceLimit,
@@ -172,7 +141,6 @@ export function ShopProvider({ children }) {
     sortBy,
     toggleWishlist,
     updateQty,
-    user,
     wishlist,
   ]);
 

@@ -10,13 +10,14 @@ import {
   Package,
   RotateCcw,
   ShieldCheck,
+  Smartphone,
   Star,
   TicketPercent,
   UserRound,
   WalletCards,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useShop } from "../context/ShopContext";
+import { useAuth } from "../context/AuthContext";
 
 const accountLinks = [
   { icon: Package, label: "My orders", detail: "Track, return or buy again", to: "/orders" },
@@ -31,7 +32,7 @@ const recentOrders = [
 ];
 
 export default function AccountPage() {
-  const { logout, user } = useShop();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
   const customer = user || { name: "Guest shopper", email: "Sign in to sync your account", phone: "" };
   const initials = customer.name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase();
@@ -61,6 +62,8 @@ export default function AccountPage() {
           <Link to="/wishlist"><Heart size={18} /> Wishlist</Link>
           <Link to="/payment-methods"><WalletCards size={18} /> Payments</Link>
           <Link to="/notifications"><Bell size={18} /> Notifications <b>3</b></Link>
+          <Link to="/sessions"><Smartphone size={18} /> Devices</Link>
+          <Link to="/two-factor"><ShieldCheck size={18} /> Sign-in security</Link>
           <Link to="/support"><CircleHelp size={18} /> Help centre</Link>
           <button type="button" onClick={signOut}><LogOut size={18} /> Sign out</button>
         </aside>

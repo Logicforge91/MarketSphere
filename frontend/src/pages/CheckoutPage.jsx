@@ -4,9 +4,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useShop } from "../context/ShopContext";
 import { money } from "../utils/format";
 import PincodeDelivery from "../components/commerce/PincodeDelivery";
+import { useAuth } from "../context/AuthContext";
 
 export default function CheckoutPage() {
-  const { cart, cartTotal, placeOrder, user } = useShop();
+  const { cart, cartTotal, placeOrder } = useShop();
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [address, setAddress] = useState({
     line: "BTM 2nd Stage, Bengaluru, Karnataka",

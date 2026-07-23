@@ -14,6 +14,15 @@ const OrdersPage = lazyPage(() => import("./pages/OrdersPage.jsx"));
 const WishlistPage = lazyPage(() => import("./pages/WishlistPage.jsx"));
 const AuthPage = lazyPage(() => import("./pages/AuthPage.jsx"));
 const AccountPage = lazyPage(() => import("./pages/AccountPage.jsx"));
+const authenticationPages = () => import("./pages/AuthenticationPages.jsx");
+const RegisterPage = lazyPage(authenticationPages, "RegisterPage");
+const OtpLoginPage = lazyPage(authenticationPages, "OtpLoginPage");
+const ForgotPasswordPage = lazyPage(authenticationPages, "ForgotPasswordPage");
+const ResetPasswordPage = lazyPage(authenticationPages, "ResetPasswordPage");
+const VerificationPage = lazyPage(authenticationPages, "VerificationPage");
+const TwoFactorPage = lazyPage(authenticationPages, "TwoFactorPage");
+const SessionManagementPage = lazyPage(authenticationPages, "SessionManagementPage");
+const DeleteAccountPage = lazyPage(authenticationPages, "DeleteAccountPage");
 
 const utilityPages = () => import("./pages/UtilityPages.jsx");
 const NotificationsPage = lazyPage(utilityPages, "NotificationsPage");
@@ -60,6 +69,15 @@ export default function App() {
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/login" element={<AuthPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login/otp" element={<OtpLoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/verify-email" element={<VerificationPage channel="email" />} />
+          <Route path="/verify-mobile" element={<VerificationPage channel="mobile" />} />
+          <Route path="/two-factor" element={<TwoFactorPage />} />
+          <Route path="/sessions" element={<SessionManagementPage />} />
+          <Route path="/delete-account" element={<DeleteAccountPage />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/wallet" element={<WalletPage />} />
