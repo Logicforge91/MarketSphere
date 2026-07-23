@@ -2,9 +2,10 @@ import React, { memo } from "react";
 import { Heart, ShoppingBag, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { money } from "../../utils/format";
+import { slugify } from "../../data/catalog";
 
 function ProductCard({ product, onAdd, onWishlist }) {
-  const productPath = `/product/${encodeURIComponent(product.name.toLowerCase().replaceAll(" ", "-"))}`;
+  const productPath = `/product/${product.slug || slugify(product.name)}`;
 
   return (
     <article className="product-card">

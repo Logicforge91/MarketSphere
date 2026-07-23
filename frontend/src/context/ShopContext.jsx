@@ -1,25 +1,50 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { cartItems, deals, mobileProducts, shoeProducts } from "../data/shopData";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { cartItems, mobileProducts, shoeProducts } from "../data/shopData";
+import { catalog } from "../data/catalog";
 
 const ShopContext = createContext(null);
 
-const catalog = [...deals, ...mobileProducts, ...shoeProducts];
+function readStoredState(key, fallback) {
+  try {
+    const value = window.localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 export function ShopProvider({ children }) {
-  const [cart, setCart] = useState(cartItems);
-  const [wishlist, setWishlist] = useState([shoeProducts[0], mobileProducts[1]]);
+  const [cart, setCart] = useState(() => readStoredState("marketsphere:cart", cartItems));
+  const [wishlist, setWishlist] = useState(() => readStoredState("marketsphere:wishlist", [shoeProducts[0], mobileProducts[1]]));
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [priceLimit, setPriceLimit] = useState(80000);
+  const [sortBy, setSortBy] = useState("featured");
   const [notification, setNotification] = useState("");
 
   const products = useMemo(() => {
-    return catalog.filter((product) => {
+    const filtered = catalog.filter((product) => {
       const matchesSearch = product.name.toLowerCase().includes(query.toLowerCase());
       const matchesPrice = product.price <= priceLimit;
-      return matchesSearch && matchesPrice;
+      const matchesCategory = activeCategory === "All" || product.category === activeCategory;
+      return matchesSearch && matchesPrice && matchesCategory;
     });
-  }, [query, priceLimit]);
+
+    return [...filtered].sort((a, b) => {
+      if (sortBy === "price-asc") return a.price - b.price;
+      if (sortBy === "price-desc") return b.price - a.price;
+      if (sortBy === "rating") return b.rating - a.rating;
+      return 0;
+    });
+  }, [activeCategory, priceLimit, query, sortBy]);
+
+  useEffect(() => {
+    window.localStorage.setItem("marketsphere:cart", JSON.stringify(cart));
+  }, [cart]);
+
+  useEffect(() => {
+    window.localStorage.setItem("marketsphere:wishlist", JSON.stringify(wishlist));
+  }, [wishlist]);
 
   const addToCart = useCallback((product) => {
     setCart((items) => {
@@ -66,6 +91,8 @@ export function ShopProvider({ children }) {
     setActiveCategory,
     setPriceLimit,
     setQuery,
+    setSortBy,
+    sortBy,
     toggleWishlist,
     updateQty,
     wishlist,
@@ -80,6 +107,7 @@ export function ShopProvider({ children }) {
     products,
     query,
     removeFromCart,
+    sortBy,
     toggleWishlist,
     updateQty,
     wishlist,

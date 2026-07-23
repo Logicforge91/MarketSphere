@@ -155,3 +155,88 @@ export function AboutPage() {
     </main>
   );
 }
+
+const policyContent = {
+  shipping: {
+    eyebrow: "Delivery information",
+    title: "Shipping and delivery",
+    copy: "Clear delivery timelines and options for every MarketSphere order.",
+    sections: [
+      ["Standard delivery", "Most orders arrive within three to six business days. Delivery estimates are shown before payment and in your order confirmation."],
+      ["Express delivery", "Express delivery is available for eligible products and pincodes. The applicable fee and estimated date appear during checkout."],
+      ["Order tracking", "A tracking link becomes available as soon as your order ships. You can also follow every milestone from My Orders."],
+      ["Delivery issues", "If a parcel is delayed or marked delivered incorrectly, contact customer care within 48 hours so we can investigate."],
+    ],
+  },
+  privacy: {
+    eyebrow: "Your data",
+    title: "Privacy policy",
+    copy: "How MarketSphere collects, uses, and protects your information.",
+    sections: [
+      ["Information we collect", "We collect account, order, payment-reference, device, and preference information needed to provide and improve our services."],
+      ["How we use information", "Information supports order fulfilment, fraud prevention, customer support, product discovery, and communications you choose to receive."],
+      ["Your choices", "You can update profile details, communication preferences, and saved addresses from your account at any time."],
+      ["Security", "Sensitive data is protected using access controls, encryption, and trusted payment processors. Full card credentials are not stored by MarketSphere."],
+    ],
+  },
+  terms: {
+    eyebrow: "Legal",
+    title: "Terms and conditions",
+    copy: "The rules that govern use of MarketSphere services.",
+    sections: [
+      ["Using MarketSphere", "You agree to provide accurate information, keep account credentials secure, and use the service only for lawful personal shopping."],
+      ["Orders and pricing", "Orders remain subject to product availability and payment confirmation. We may cancel and refund orders affected by listing or pricing errors."],
+      ["Returns and refunds", "Returns are governed by the policy displayed on each product and the condition of the item received by our return centre."],
+      ["Marketplace content", "Product names, images, editorial content, and interface elements may not be reproduced without permission."],
+    ],
+  },
+};
+
+function PolicyPage({ type }) {
+  const content = policyContent[type];
+  return (
+    <main className="real-page inner-page policy-page">
+      <InnerHeading eyebrow={content.eyebrow} title={content.title} copy={content.copy} />
+      <div className="policy-layout">
+        <aside>{content.sections.map(([title]) => <a href={`#${title.toLowerCase().replaceAll(" ", "-")}`} key={title}>{title}</a>)}</aside>
+        <section>{content.sections.map(([title, body]) => <article id={title.toLowerCase().replaceAll(" ", "-")} key={title}><h2>{title}</h2><p>{body}</p></article>)}</section>
+      </div>
+    </main>
+  );
+}
+
+export function ShippingPage() {
+  return <PolicyPage type="shipping" />;
+}
+
+export function PrivacyPage() {
+  return <PolicyPage type="privacy" />;
+}
+
+export function TermsPage() {
+  return <PolicyPage type="terms" />;
+}
+
+export function CareersPage() {
+  const roles = [
+    ["Senior Frontend Engineer", "Technology · Bengaluru · Hybrid"],
+    ["Category Manager, Fashion", "Merchandising · Mumbai · On-site"],
+    ["Product Designer", "Design · Bengaluru · Hybrid"],
+    ["Customer Experience Lead", "Operations · Gurugram · On-site"],
+  ];
+  return (
+    <main className="real-page inner-page careers-page">
+      <section className="careers-hero"><span>Careers at MarketSphere</span><h1>Build the future of shopping</h1><p>Join a multidisciplinary team creating useful, inclusive commerce experiences for millions of customers.</p><a href="#open-roles">Explore open roles <ArrowRight size={15} /></a></section>
+      <section id="open-roles" className="role-list"><InnerHeading eyebrow="Open positions" title="Find your next role" />{roles.map(([role, meta]) => <article key={role}><div><strong>{role}</strong><span>{meta}</span></div><button>View role <ArrowRight size={14} /></button></article>)}</section>
+    </main>
+  );
+}
+
+export function NotFoundPage() {
+  return (
+    <main className="not-found-page">
+      <span>404</span><h1>This page stepped out</h1><p>The link may be outdated, but the latest MarketSphere edit is waiting.</p>
+      <div><Link className="primary" to="/">Go home</Link><Link className="secondary" to="/products">Shop products</Link></div>
+    </main>
+  );
+}

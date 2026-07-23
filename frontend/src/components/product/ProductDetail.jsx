@@ -5,25 +5,26 @@ import { money } from "../../utils/format";
 import OfferList from "../commerce/OfferList";
 import PincodeDelivery from "../commerce/PincodeDelivery";
 
-export default function ProductDetail() {
+export default function ProductDetail({ product = productDetail, onAdd }) {
+  const swatches = product.swatches || productDetail.swatches;
   return (
     <section className="detail-panel">
       <div className="gallery">
-        <div className="thumbs">{[1, 2, 3, 4].map((i) => <img src={productDetail.image} alt="" key={i} />)}</div>
-        <img className="main-product" src={productDetail.image} alt={productDetail.name} />
+        <div className="thumbs">{[1, 2, 3, 4].map((i) => <img src={product.image} alt="" key={i} />)}</div>
+        <img className="main-product" src={product.image} alt={product.name} />
       </div>
       <div className="product-info">
         <span className="seller">Best Seller</span>
-        <h2>{productDetail.name}</h2>
-        <div className="rating"><Star size={17} fill="currentColor" /> {productDetail.rating} ({productDetail.reviews.toLocaleString()} reviews) <span>{productDetail.sold} sold</span></div>
-        <div className="price"><strong>{money(productDetail.price)}</strong><del>{money(productDetail.oldPrice)}</del><span>30% Off</span></div>
+        <h2>{product.name}</h2>
+        <div className="rating"><Star size={17} fill="currentColor" /> {product.rating} ({(product.reviews || 2100).toLocaleString()} reviews) <span>{product.sold || "1K+"} sold</span></div>
+        <div className="price"><strong>{money(product.price)}</strong><del>{money(product.oldPrice)}</del><span>{product.discount || "New season"}</span></div>
         <p>A flowing floral silhouette with a softly fitted bodice, designed for effortless day-to-evening dressing.</p>
         <strong className="option-label">Colour: Multi colour</strong>
-        <div className="swatches">{productDetail.swatches.map((color) => <button style={{ backgroundColor: color }} key={color} />)}</div>
+        <div className="swatches">{swatches.map((color) => <button aria-label={`Choose colour ${color}`} style={{ backgroundColor: color }} key={color} />)}</div>
         <strong className="option-label">Size: M</strong>
         <div className="size-options">{["XS", "S", "M", "L", "XL"].map((size) => <button className={size === "M" ? "active" : ""} key={size}>{size}</button>)}</div>
         <div className="qty"><button><Minus size={14} /></button><span>1</span><button><Plus size={14} /></button></div>
-        <div className="buy-actions"><button className="primary">Add to cart</button><button className="secondary">Buy now</button></div>
+        <div className="buy-actions"><button className="primary" onClick={() => onAdd?.(product)}>Add to cart</button><button className="secondary">Buy now</button></div>
         <button className="product-wishlist"><Heart size={16} /> Add to wishlist</button>
         <OfferList />
         <PincodeDelivery />
