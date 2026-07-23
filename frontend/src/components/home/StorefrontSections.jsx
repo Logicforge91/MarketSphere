@@ -29,7 +29,7 @@ export function StorefrontHero() {
         <p>{slide.description}</p>
         <Link to="/products">Shop now <ArrowRight size={15} /></Link>
       </div>
-      <img src={slide.image} style={{ objectPosition: slide.imagePosition }} alt={`${slide.title} ${slide.offer}`} />
+      <img src={slide.image} style={{ objectPosition: slide.imagePosition }} alt={`${slide.title} ${slide.offer}`} width="1200" height="720" fetchPriority="high" />
       <div className="hero-controls">
         <button type="button" aria-label="Previous campaign" onClick={() => moveSlide(-1)}><ArrowLeft size={16} /></button>
         <div className="hero-dots">
@@ -70,6 +70,32 @@ export function ProductShelf({ title, products, onAdd, onWishlist }) {
       <SectionHeading title={title} />
       <div className="velora-product-grid">
         {products.map((product) => <ProductCard product={product} onAdd={onAdd} onWishlist={onWishlist} key={product.name} />)}
+      </div>
+    </section>
+  );
+}
+
+const editOptions = {
+  "Everyday": { copy: "Relaxed pieces that work from coffee runs to late plans.", offset: 0 },
+  "Work": { copy: "Polished layers and modern tailoring for days in motion.", offset: 1 },
+  "Occasion": { copy: "Statement silhouettes selected for your next invitation.", offset: 2 },
+};
+
+export function PersonalizedEdit({ products, onAdd, onWishlist }) {
+  const [preference, setPreference] = useState("Everyday");
+  const selected = editOptions[preference];
+  const recommendations = [...products.slice(selected.offset), ...products.slice(0, selected.offset)].slice(0, 4);
+
+  return (
+    <section className="personalized-edit" aria-labelledby="personalized-edit-title">
+      <div className="personalized-edit-heading">
+        <div><span>Curated for you</span><h2 id="personalized-edit-title">Build your edit</h2><p>{selected.copy}</p></div>
+        <div className="preference-control" aria-label="Choose an occasion">
+          {Object.keys(editOptions).map((option) => <button type="button" className={preference === option ? "active" : ""} aria-pressed={preference === option} onClick={() => setPreference(option)} key={option}>{option}</button>)}
+        </div>
+      </div>
+      <div className="velora-product-grid">
+        {recommendations.map((product) => <ProductCard product={product} onAdd={onAdd} onWishlist={onWishlist} key={product.name} />)}
       </div>
     </section>
   );

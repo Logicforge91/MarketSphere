@@ -2,9 +2,10 @@ import React, { memo } from "react";
 import { Heart, ShoppingBag, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { money } from "../../utils/format";
+import { slugify } from "../../data/catalog";
 
 function ProductCard({ product, onAdd, onWishlist }) {
-  const productPath = `/product/${encodeURIComponent(product.name.toLowerCase().replaceAll(" ", "-"))}`;
+  const productPath = `/product/${product.slug || slugify(product.name)}`;
 
   return (
     <article className="product-card">
@@ -16,7 +17,7 @@ function ProductCard({ product, onAdd, onWishlist }) {
           </button>
         )}
         <Link to={productPath} aria-label={`View ${product.name}`}>
-          <img src={product.image} alt={product.name} loading="lazy" />
+          <img src={product.image} alt={product.name} width="600" height="750" loading="lazy" />
         </Link>
       </div>
       <Link className="product-card-title" to={productPath}><h3>{product.name}</h3></Link>

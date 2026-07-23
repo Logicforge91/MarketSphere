@@ -12,6 +12,7 @@ export default function CartPage() {
     <main className="real-page cart-layout">
       <section>
         <div className="page-heading"><div><p>Shopping Bag</p><h1>My Cart ({cart.length})</h1></div></div>
+        {!cart.length && <div className="empty-state">Your bag is empty</div>}
         {cart.map((item) => (
           <article className="cart-line" key={item.name}>
             <img src={item.image} alt={item.name} />
@@ -28,7 +29,7 @@ export default function CartPage() {
         <p><span>Delivery</span><b>Free</b></p>
         <p><span>Discount</span><b>-{money(Math.min(cartTotal * 0.1, 1200))}</b></p>
         <h3><span>Total</span><b>{money(cartTotal - Math.min(cartTotal * 0.1, 1200))}</b></h3>
-        <Link className="primary route-button" to="/checkout">Checkout</Link>
+        {cart.length ? <Link className="primary route-button" to="/checkout">Checkout</Link> : <Link className="secondary route-button" to="/products">Continue shopping</Link>}
       </aside>
     </main>
   );

@@ -10,18 +10,20 @@ import {
   Package,
   RotateCcw,
   ShieldCheck,
+  Smartphone,
   Star,
   TicketPercent,
   UserRound,
   WalletCards,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const accountLinks = [
   { icon: Package, label: "My orders", detail: "Track, return or buy again", to: "/orders" },
   { icon: Heart, label: "Wishlist", detail: "12 saved products", to: "/wishlist" },
   { icon: RotateCcw, label: "Returns & refunds", detail: "Manage active returns", to: "/returns" },
-  { icon: MapPin, label: "Saved addresses", detail: "2 delivery addresses", to: "/account" },
+  { icon: MapPin, label: "Saved addresses", detail: "2 delivery addresses", to: "/addresses" },
 ];
 
 const recentOrders = [
@@ -30,14 +32,24 @@ const recentOrders = [
 ];
 
 export default function AccountPage() {
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
+  const customer = user || { name: "Guest shopper", email: "Sign in to sync your account", phone: "" };
+  const initials = customer.name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+
+  function signOut() {
+    logout();
+    navigate("/login");
+  }
+
   return (
     <main className="account-page account-dashboard">
       <section className="account-welcome">
-        <div className="account-avatar" aria-hidden="true">RK</div>
+        <div className="account-avatar" aria-hidden="true">{initials}</div>
         <div className="account-identity">
           <span>Welcome back</span>
-          <h1>Rahul Kumar</h1>
-          <p>rahul@email.com <i /> +91 98765 43210</p>
+          <h1>{customer.name}</h1>
+          <p>{customer.email}{(customer.mobile || customer.phone) && <><i /> {customer.mobile || customer.phone}</>}</p>
         </div>
         <button className="account-edit" type="button">Edit profile</button>
       </section>
@@ -48,10 +60,13 @@ export default function AccountPage() {
           <Link className="active" to="/account"><UserRound size={18} /> Overview</Link>
           <Link to="/orders"><Package size={18} /> Orders</Link>
           <Link to="/wishlist"><Heart size={18} /> Wishlist</Link>
-          <Link to="/wallet"><WalletCards size={18} /> Payments</Link>
+          <Link to="/payment-methods"><WalletCards size={18} /> Payments</Link>
           <Link to="/notifications"><Bell size={18} /> Notifications <b>3</b></Link>
+          <Link to="/sessions"><Smartphone size={18} /> Devices</Link>
+          <Link to="/two-factor"><ShieldCheck size={18} /> Sign-in security</Link>
+          <Link to="/delete-account"><CircleHelp size={18} /> Account settings</Link>
           <Link to="/support"><CircleHelp size={18} /> Help centre</Link>
-          <button type="button"><LogOut size={18} /> Sign out</button>
+          <button type="button" onClick={signOut}><LogOut size={18} /> Sign out</button>
         </aside>
 
         <div className="account-content">

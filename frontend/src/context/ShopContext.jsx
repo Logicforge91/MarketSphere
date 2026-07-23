@@ -1,24 +1,55 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { cartItems, deals, mobileProducts, shoeProducts } from "../data/shopData";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { cartItems, mobileProducts, orders as seedOrders, shoeProducts } from "../data/shopData";
+import { catalog } from "../data/catalog";
 
 const ShopContext = createContext(null);
 
-const catalog = [...deals, ...mobileProducts, ...shoeProducts];
+function readStoredState(key, fallback) {
+  try {
+    const value = window.localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 export function ShopProvider({ children }) {
-  const [cart, setCart] = useState(cartItems);
-  const [wishlist, setWishlist] = useState([shoeProducts[0], mobileProducts[1]]);
+  const [cart, setCart] = useState(() => readStoredState("marketsphere:cart", cartItems));
+  const [wishlist, setWishlist] = useState(() => readStoredState("marketsphere:wishlist", [shoeProducts[0], mobileProducts[1]]));
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [priceLimit, setPriceLimit] = useState(80000);
+  const [sortBy, setSortBy] = useState("featured");
+  const [notification, setNotification] = useState("");
+  const [orders, setOrders] = useState(() => readStoredState("marketsphere:orders", seedOrders));
 
   const products = useMemo(() => {
-    return catalog.filter((product) => {
+    const filtered = catalog.filter((product) => {
       const matchesSearch = product.name.toLowerCase().includes(query.toLowerCase());
       const matchesPrice = product.price <= priceLimit;
-      return matchesSearch && matchesPrice;
+      const matchesCategory = activeCategory === "All" || product.category === activeCategory;
+      return matchesSearch && matchesPrice && matchesCategory;
     });
-  }, [query, priceLimit]);
+
+    return [...filtered].sort((a, b) => {
+      if (sortBy === "price-asc") return a.price - b.price;
+      if (sortBy === "price-desc") return b.price - a.price;
+      if (sortBy === "rating") return b.rating - a.rating;
+      return 0;
+    });
+  }, [activeCategory, priceLimit, query, sortBy]);
+
+  useEffect(() => {
+    window.localStorage.setItem("marketsphere:cart", JSON.stringify(cart));
+  }, [cart]);
+
+  useEffect(() => {
+    window.localStorage.setItem("marketsphere:wishlist", JSON.stringify(wishlist));
+  }, [wishlist]);
+
+  useEffect(() => {
+    window.localStorage.setItem("marketsphere:orders", JSON.stringify(orders));
+  }, [orders]);
 
   const addToCart = useCallback((product) => {
     setCart((items) => {
@@ -28,6 +59,7 @@ export function ShopProvider({ children }) {
       }
       return [...items, { ...product, qty: 1 }];
     });
+    setNotification(`${product.name} added to your bag`);
   }, []);
 
   const removeFromCart = useCallback((name) => {
@@ -39,26 +71,56 @@ export function ShopProvider({ children }) {
   }, []);
 
   const toggleWishlist = useCallback((product) => {
+    const exists = wishlist.some((item) => item.name === product.name);
     setWishlist((items) => {
-      const exists = items.some((item) => item.name === product.name);
       return exists ? items.filter((item) => item.name !== product.name) : [...items, product];
     });
-  }, []);
+    setNotification(exists ? `${product.name} removed from saved items` : `${product.name} saved for later`);
+  }, [wishlist]);
+
+  const clearNotification = useCallback(() => setNotification(""), []);
 
   const cartTotal = cart.reduce((total, item) => total + item.price * (item.qty || 1), 0);
+
+  const placeOrder = useCallback(({ address, paymentMethod }) => {
+    if (!cart.length) return null;
+    const order = {
+      address,
+      date: new Date().toISOString(),
+      id: `MS${Date.now().toString().slice(-10)}`,
+      image: cart[0].image,
+      items: cart,
+      paymentMethod,
+      status: "Confirmed",
+      total: cart.reduce((total, item) => total + item.price * (item.qty || 1), 0),
+    };
+    setOrders((items) => [order, ...items]);
+    setCart([]);
+    setNotification("Order placed successfully");
+    return order;
+  }, [cart]);
+
+  const latestOrder = orders[0] || null;
 
   const value = useMemo(() => ({
     activeCategory,
     addToCart,
     cart,
     cartTotal,
+    clearNotification,
+    latestOrder,
+    notification,
+    orders,
     priceLimit,
     products,
     query,
     removeFromCart,
+    placeOrder,
     setActiveCategory,
     setPriceLimit,
     setQuery,
+    setSortBy,
+    sortBy,
     toggleWishlist,
     updateQty,
     wishlist,
@@ -67,10 +129,16 @@ export function ShopProvider({ children }) {
     addToCart,
     cart,
     cartTotal,
+    clearNotification,
+    latestOrder,
+    notification,
+    orders,
     priceLimit,
     products,
     query,
     removeFromCart,
+    placeOrder,
+    sortBy,
     toggleWishlist,
     updateQty,
     wishlist,

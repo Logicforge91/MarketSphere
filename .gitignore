@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Frontend local artifacts ###
+frontend/.chrome-mobile/

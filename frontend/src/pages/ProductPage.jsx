@@ -1,23 +1,39 @@
 import React from "react";
-import { SlidersHorizontal } from "lucide-react";
-import { deals } from "../data/shopData";
+import { ArrowLeft, SlidersHorizontal } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
 import BenefitRow from "../components/common/BenefitRow";
 import SectionTitle from "../components/common/SectionTitle";
 import ProductCard from "../components/product/ProductCard";
 import ProductDetail from "../components/product/ProductDetail";
 import ReviewsAndBundles from "../components/product/ReviewsAndBundles";
+import { catalog, getProductBySlug } from "../data/catalog";
 import { useShop } from "../context/ShopContext";
 
 export default function ProductPage() {
+  const { slug } = useParams();
   const { addToCart, toggleWishlist } = useShop();
+  const product = getProductBySlug(slug);
+
+  if (!product) {
+    return (
+      <main className="product-not-found">
+        <span>Product unavailable</span><h1>We could not find this item</h1><p>It may have sold out or moved to a new collection.</p>
+        <Link className="primary" to="/products"><ArrowLeft size={16} /> Browse products</Link>
+      </main>
+    );
+  }
+
+  const recommendations = catalog
+    .filter((item) => item.slug !== product.slug && item.category === product.category)
+    .slice(0, 5);
 
   return (
     <main className="desktop-page product-page real-product-page">
-      <ProductDetail />
+      <ProductDetail product={product} onAdd={addToCart} />
       <BenefitRow />
       <ReviewsAndBundles />
-      <SectionTitle title="You May Also Like" action={<SlidersHorizontal size={16} />} />
-      <div className="product-grid compact">{deals.slice(0, 5).map((p) => <ProductCard product={p} onAdd={addToCart} onWishlist={toggleWishlist} key={p.name} />)}</div>
+      <SectionTitle title="You may also like" action={<SlidersHorizontal size={16} />} />
+      <div className="product-grid compact">{recommendations.map((item) => <ProductCard product={item} onAdd={addToCart} onWishlist={toggleWishlist} key={item.id} />)}</div>
     </main>
   );
 }
