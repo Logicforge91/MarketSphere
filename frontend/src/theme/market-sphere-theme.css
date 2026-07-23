@@ -1,0 +1,597 @@
+/*
+ * MarketSphere theme contract.
+ * Page-level styling remains in styles.css while reusable tokens and interaction
+ * guarantees live here so future screens can share the same visual language.
+ */
+:root {
+  color-scheme: light;
+  --velora-violet-50: #f4f1ff;
+  --velora-violet-100: #ebe5ff;
+  --velora-violet-300: #b8a6f4;
+  --velora-violet-500: #6744e5;
+  --velora-violet-600: #4f2bd9;
+  --velora-violet-700: #3f20b8;
+  --velora-ink-950: #111322;
+  --velora-ink-700: #454958;
+  --velora-ink-500: #777b8d;
+  --velora-line: #e9e9f2;
+  --velora-canvas: #f8f8fc;
+  --velora-surface: #fff;
+  --velora-success: #36a47a;
+  --velora-warning: #f4a51c;
+  --velora-danger: #e75262;
+  --velora-radius-sm: 4px;
+  --velora-radius-md: 6px;
+  --velora-radius-lg: 8px;
+  --velora-shadow-sm: 0 4px 14px rgba(28, 22, 55, 0.05);
+  --velora-shadow-md: 0 12px 30px rgba(28, 22, 55, 0.09);
+  --velora-transition: 160ms ease;
+}
+
+::selection {
+  color: #fff;
+  background: var(--velora-violet-600);
+}
+
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid rgba(103, 68, 229, 0.28);
+  outline-offset: 2px;
+}
+
+button:disabled,
+input:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.product-card-media {
+  position: relative;
+  overflow: hidden;
+  background: #f7f7fa;
+}
+
+.product-card-media > a {
+  display: block;
+}
+
+.product-card-title {
+  display: block;
+}
+
+.product-card-price {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.product-card-rating span {
+  color: var(--velora-ink-500);
+}
+
+.product-card .card-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.product-card img {
+  transition: transform 240ms ease;
+}
+
+.product-card:hover img {
+  transform: scale(1.025);
+}
+
+.velora-announcement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  min-height: 25px;
+  color: #f4f1ff;
+  background: var(--velora-ink-950);
+  font-size: 9px;
+  letter-spacing: 0.4px;
+}
+
+.velora-logo {
+  display: grid;
+  font-size: 18px;
+  letter-spacing: 1.2px;
+  line-height: 1;
+}
+
+.velora-logo small {
+  margin-top: 5px;
+  font-size: 6px;
+  font-weight: 600;
+  letter-spacing: 2.1px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.velora-header .header-action {
+  width: auto;
+  min-width: 34px;
+  grid-template-columns: auto auto;
+  gap: 5px;
+}
+
+.velora-header .header-action > span {
+  color: var(--velora-ink-700);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.velora-header .search-clear {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  color: var(--velora-ink-500);
+  background: transparent;
+}
+
+.mobile-menu-trigger,
+.mobile-nav-panel,
+.mobile-nav-backdrop {
+  display: none;
+}
+
+.hero-controls {
+  position: absolute;
+  bottom: 16px;
+  left: 46px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.hero-controls > button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: var(--velora-ink-950);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+}
+
+.hero-dots {
+  position: static;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-dots button {
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  background: rgba(17, 19, 34, 0.28);
+  border-radius: 999px;
+  transition: width var(--velora-transition), background var(--velora-transition);
+}
+
+.hero-dots button.active {
+  width: 20px;
+  background: var(--velora-violet-600);
+}
+
+.velora-categories a {
+  align-content: start;
+  gap: 6px;
+  padding: 0 0 12px;
+  overflow: hidden;
+}
+
+.velora-categories a > span {
+  width: 100%;
+  height: 104px;
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.velora-categories a > span img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 240ms ease;
+}
+
+.velora-categories a:hover img {
+  transform: scale(1.04);
+}
+
+.velora-categories a small {
+  color: var(--velora-violet-600);
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.velora-trend-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr;
+  gap: 12px;
+}
+
+.velora-trend-grid article {
+  position: relative;
+  min-height: 330px;
+  overflow: hidden;
+  border-radius: var(--velora-radius-md);
+}
+
+.velora-trend-grid article.featured {
+  min-height: 420px;
+  grid-row: span 2;
+}
+
+.velora-trend-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 320ms ease;
+}
+
+.velora-trend-grid article:hover img {
+  transform: scale(1.025);
+}
+
+.velora-trend-grid article > div {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 22px;
+  background: linear-gradient(transparent, rgba(12, 12, 20, 0.75));
+}
+
+.velora-trend-grid article.light > div {
+  color: #fff;
+}
+
+.velora-trend-grid article span {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.velora-trend-grid h3 {
+  margin: 5px 0 6px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.velora-trend-grid p {
+  max-width: 330px;
+  margin: 0 0 12px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.velora-trend-grid a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.velora-lookbook {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(360px, 0.8fr);
+  gap: 15px;
+  margin: 34px 0;
+}
+
+.velora-lookbook-image {
+  position: relative;
+  min-height: 520px;
+  overflow: hidden;
+  border-radius: var(--velora-radius-md);
+}
+
+.velora-lookbook-image > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.velora-lookbook-image > div {
+  position: absolute;
+  right: 22px;
+  bottom: 22px;
+  left: 22px;
+  max-width: 400px;
+  padding: 22px;
+  color: #fff;
+  background: rgba(17, 19, 34, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: var(--velora-radius-md);
+}
+
+.velora-lookbook-image span {
+  color: #d9cffb;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.velora-lookbook-image h2 {
+  margin: 5px 0 7px;
+  font-size: 27px;
+}
+
+.velora-lookbook-image p {
+  margin: 0;
+  color: rgba(255,255,255,.8);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.velora-lookbook-products {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.velora-lookbook-products .product-card {
+  min-width: 0;
+}
+
+.velora-lookbook-products .product-card img {
+  height: 360px;
+  object-fit: cover;
+}
+
+@media (max-width: 1000px) {
+  .velora-header .header-action > span {
+    display: none;
+  }
+
+  .velora-trend-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .velora-trend-grid article.featured {
+    grid-column: 1 / -1;
+    min-height: 380px;
+    grid-row: auto;
+  }
+
+  .velora-lookbook {
+    grid-template-columns: 1fr;
+  }
+
+  .velora-lookbook-products .product-card img {
+    height: 300px;
+  }
+}
+
+@media (max-width: 700px) {
+  body:has(.mobile-nav-panel.open) {
+    overflow: hidden;
+  }
+
+  .velora-announcement {
+    min-height: 23px;
+    gap: 0;
+  }
+
+  .velora-announcement span:last-child {
+    display: none;
+  }
+
+  .mobile-menu-trigger {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    color: var(--velora-ink-950);
+    background: transparent;
+  }
+
+  .velora-header .nav {
+    grid-template-columns: 30px auto 1fr auto;
+  }
+
+  .velora-logo {
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .velora-logo small {
+    display: none;
+  }
+
+  .velora-header .search {
+    order: 5;
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: none;
+    margin-top: 2px;
+  }
+
+  .velora-header .tabs {
+    display: none;
+  }
+
+  .velora-header .actions > a:first-child,
+  .velora-header .actions .header-action:nth-child(3) {
+    display: none;
+  }
+
+  .mobile-nav-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: block;
+    visibility: hidden;
+    background: rgba(17, 19, 34, 0.4);
+    opacity: 0;
+    transition: opacity var(--velora-transition), visibility var(--velora-transition);
+  }
+
+  .mobile-nav-backdrop.open {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .mobile-nav-panel {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 70;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    width: min(86vw, 340px);
+    padding: 18px;
+    background: #fff;
+    box-shadow: 18px 0 50px rgba(17, 19, 34, 0.18);
+    transform: translateX(-105%);
+    transition: transform 220ms ease;
+  }
+
+  .mobile-nav-panel.open {
+    transform: translateX(0);
+  }
+
+  .mobile-nav-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--velora-line);
+  }
+
+  .mobile-nav-heading button {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    background: var(--velora-canvas);
+    border-radius: 50%;
+  }
+
+  .mobile-nav-panel nav {
+    display: grid;
+    align-content: start;
+    padding-top: 14px;
+  }
+
+  .mobile-nav-panel nav a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 45px;
+    color: var(--velora-ink-700);
+    border-bottom: 1px solid #f1f1f5;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .mobile-nav-panel nav a.active {
+    color: var(--velora-violet-600);
+  }
+
+  .mobile-nav-account {
+    display: grid;
+    gap: 8px;
+    padding-top: 14px;
+    border-top: 1px solid var(--velora-line);
+  }
+
+  .mobile-nav-account a {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 36px;
+    color: var(--velora-ink-700);
+    font-size: 11px;
+  }
+
+  .hero-controls {
+    left: 24px;
+  }
+
+  .velora-trend-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .velora-trend-grid article,
+  .velora-trend-grid article.featured {
+    min-height: 330px;
+    grid-column: auto;
+  }
+
+  .velora-lookbook-image {
+    min-height: 430px;
+  }
+
+  .velora-lookbook-image > div {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    padding: 17px;
+  }
+
+  .velora-lookbook-products {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .velora-lookbook-products .product-card img {
+    height: 210px;
+  }
+}
+
+@media (max-width: 420px) {
+  .velora-header .actions {
+    gap: 6px;
+  }
+
+  .velora-lookbook-products {
+    gap: 7px;
+  }
+
+  .velora-lookbook-products .product-card img {
+    height: 180px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --velora-line: #b9bac5;
+  }
+
+  :where(a, button, input, select, textarea):focus-visible {
+    outline-color: var(--velora-violet-700);
+  }
+}
