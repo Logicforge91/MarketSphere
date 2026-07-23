@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { brands } from "../data/shopData";
+import { useShop } from "../context/ShopContext";
+import { money } from "../utils/format";
 
 function InnerHeading({ eyebrow, title, copy, action }) {
   return (
@@ -86,12 +88,18 @@ export function TrackOrderPage() {
 }
 
 export function OrderSuccessPage() {
+  const { latestOrder } = useShop();
+
+  if (!latestOrder) {
+    return <main className="order-success-page"><div className="success-ring"><Check /></div><h1>No recent order</h1><p>Complete checkout to see your confirmation here.</p><div className="success-actions"><Link className="primary" to="/products">Start shopping</Link></div></main>;
+  }
+
   return (
     <main className="order-success-page">
       <div className="success-ring"><Check /></div>
-      <span>Order #MS205186</span><h1>Order placed successfully</h1>
+      <span>Order #{latestOrder.id}</span><h1>Order placed successfully</h1>
       <p>Thank you for shopping with MarketSphere. We sent a confirmation to your email.</p>
-      <div className="success-summary"><div><Truck /><span>Estimated delivery<strong>Wednesday, 27 May</strong></span></div><div><CreditCard /><span>Payment method<strong>Visa ending in 4242</strong></span></div></div>
+      <div className="success-summary"><div><Truck /><span>Order total<strong>{money(latestOrder.total)}</strong></span></div><div><CreditCard /><span>Payment method<strong>{latestOrder.paymentMethod || "Paid"}</strong></span></div></div>
       <div className="success-actions"><Link className="primary" to="/">Continue shopping</Link><Link className="secondary" to="/track-order">Track order</Link></div>
     </main>
   );

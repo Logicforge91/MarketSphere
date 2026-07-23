@@ -1,1 +1,0 @@
-import{c as e}from"./index-b3HPQHvV.js";const c=e("Check",[["path",{d:"M20 6 9 17l-5-5",key:"1gmf2c"}]]);const r=e("CreditCard",[["rect",{width:"20",height:"14",x:"2",y:"5",rx:"2",key:"ynyp8z"}],["line",{x1:"2",x2:"22",y1:"10",y2:"10",key:"1b3vmo"}]]);export{r as C,c as a};

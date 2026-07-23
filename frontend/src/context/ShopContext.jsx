@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { cartItems, mobileProducts, shoeProducts } from "../data/shopData";
+import { cartItems, mobileProducts, orders as seedOrders, shoeProducts } from "../data/shopData";
 import { catalog } from "../data/catalog";
 
 const ShopContext = createContext(null);
@@ -21,6 +21,12 @@ export function ShopProvider({ children }) {
   const [priceLimit, setPriceLimit] = useState(80000);
   const [sortBy, setSortBy] = useState("featured");
   const [notification, setNotification] = useState("");
+  const [orders, setOrders] = useState(() => readStoredState("marketsphere:orders", seedOrders));
+  const [user, setUser] = useState(() => readStoredState("marketsphere:user", {
+    email: "rahul@email.com",
+    name: "Rahul Sharma",
+    phone: "+91 98765 43210",
+  }));
 
   const products = useMemo(() => {
     const filtered = catalog.filter((product) => {
@@ -45,6 +51,15 @@ export function ShopProvider({ children }) {
   useEffect(() => {
     window.localStorage.setItem("marketsphere:wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
+
+  useEffect(() => {
+    window.localStorage.setItem("marketsphere:orders", JSON.stringify(orders));
+  }, [orders]);
+
+  useEffect(() => {
+    if (user) window.localStorage.setItem("marketsphere:user", JSON.stringify(user));
+    else window.localStorage.removeItem("marketsphere:user");
+  }, [user]);
 
   const addToCart = useCallback((product) => {
     setCart((items) => {
@@ -75,7 +90,43 @@ export function ShopProvider({ children }) {
 
   const clearNotification = useCallback(() => setNotification(""), []);
 
+  const login = useCallback((credentials) => {
+    const customer = {
+      email: credentials.email,
+      name: credentials.name || credentials.email.split("@")[0],
+      phone: credentials.phone || "",
+    };
+    setUser(customer);
+    setNotification(`Welcome back, ${customer.name}`);
+    return customer;
+  }, []);
+
+  const logout = useCallback(() => {
+    setUser(null);
+    setNotification("You have signed out");
+  }, []);
+
   const cartTotal = cart.reduce((total, item) => total + item.price * (item.qty || 1), 0);
+
+  const placeOrder = useCallback(({ address, paymentMethod }) => {
+    if (!cart.length) return null;
+    const order = {
+      address,
+      date: new Date().toISOString(),
+      id: `MS${Date.now().toString().slice(-10)}`,
+      image: cart[0].image,
+      items: cart,
+      paymentMethod,
+      status: "Confirmed",
+      total: cart.reduce((total, item) => total + item.price * (item.qty || 1), 0),
+    };
+    setOrders((items) => [order, ...items]);
+    setCart([]);
+    setNotification("Order placed successfully");
+    return order;
+  }, [cart]);
+
+  const latestOrder = orders[0] || null;
 
   const value = useMemo(() => ({
     activeCategory,
@@ -83,11 +134,16 @@ export function ShopProvider({ children }) {
     cart,
     cartTotal,
     clearNotification,
+    latestOrder,
+    login,
+    logout,
     notification,
+    orders,
     priceLimit,
     products,
     query,
     removeFromCart,
+    placeOrder,
     setActiveCategory,
     setPriceLimit,
     setQuery,
@@ -95,6 +151,7 @@ export function ShopProvider({ children }) {
     sortBy,
     toggleWishlist,
     updateQty,
+    user,
     wishlist,
   }), [
     activeCategory,
@@ -102,14 +159,20 @@ export function ShopProvider({ children }) {
     cart,
     cartTotal,
     clearNotification,
+    latestOrder,
+    login,
+    logout,
     notification,
+    orders,
     priceLimit,
     products,
     query,
     removeFromCart,
+    placeOrder,
     sortBy,
     toggleWishlist,
     updateQty,
+    user,
     wishlist,
   ]);
 

@@ -15,7 +15,8 @@ import {
   UserRound,
   WalletCards,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useShop } from "../context/ShopContext";
 
 const accountLinks = [
   { icon: Package, label: "My orders", detail: "Track, return or buy again", to: "/orders" },
@@ -30,14 +31,24 @@ const recentOrders = [
 ];
 
 export default function AccountPage() {
+  const { logout, user } = useShop();
+  const navigate = useNavigate();
+  const customer = user || { name: "Guest shopper", email: "Sign in to sync your account", phone: "" };
+  const initials = customer.name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+
+  function signOut() {
+    logout();
+    navigate("/login");
+  }
+
   return (
     <main className="account-page account-dashboard">
       <section className="account-welcome">
-        <div className="account-avatar" aria-hidden="true">RK</div>
+        <div className="account-avatar" aria-hidden="true">{initials}</div>
         <div className="account-identity">
           <span>Welcome back</span>
-          <h1>Rahul Kumar</h1>
-          <p>rahul@email.com <i /> +91 98765 43210</p>
+          <h1>{customer.name}</h1>
+          <p>{customer.email}{customer.phone && <><i /> {customer.phone}</>}</p>
         </div>
         <button className="account-edit" type="button">Edit profile</button>
       </section>
@@ -51,7 +62,7 @@ export default function AccountPage() {
           <Link to="/payment-methods"><WalletCards size={18} /> Payments</Link>
           <Link to="/notifications"><Bell size={18} /> Notifications <b>3</b></Link>
           <Link to="/support"><CircleHelp size={18} /> Help centre</Link>
-          <button type="button"><LogOut size={18} /> Sign out</button>
+          <button type="button" onClick={signOut}><LogOut size={18} /> Sign out</button>
         </aside>
 
         <div className="account-content">
