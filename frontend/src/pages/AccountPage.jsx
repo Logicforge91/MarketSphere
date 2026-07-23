@@ -49,7 +49,7 @@ export default function AccountPage() {
         <div className="account-identity">
           <span>Welcome back</span>
           <h1>{customer.name}</h1>
-          <p>{customer.email}{customer.phone && <><i /> {customer.phone}</>}</p>
+          <p>{customer.email}{(customer.mobile || customer.phone) && <><i /> {customer.mobile || customer.phone}</>}</p>
         </div>
         <button className="account-edit" type="button">Edit profile</button>
       </section>
@@ -64,6 +64,7 @@ export default function AccountPage() {
           <Link to="/notifications"><Bell size={18} /> Notifications <b>3</b></Link>
           <Link to="/sessions"><Smartphone size={18} /> Devices</Link>
           <Link to="/two-factor"><ShieldCheck size={18} /> Sign-in security</Link>
+          <Link to="/delete-account"><CircleHelp size={18} /> Account settings</Link>
           <Link to="/support"><CircleHelp size={18} /> Help centre</Link>
           <button type="button" onClick={signOut}><LogOut size={18} /> Sign out</button>
         </aside>
