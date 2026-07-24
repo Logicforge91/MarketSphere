@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { CalendarClock, Check, Clock3, Crown, CreditCard, Gift, PackageCheck, ShieldCheck, Sparkles, Star, Truck, X } from "lucide-react";
 import { money } from "../utils/format";
+import { defaultMembership } from "../data/commerceState";
+import { getStored, setStored } from "../utils/storage";
 
 const plans = [
   {
@@ -30,25 +32,8 @@ const plans = [
   },
 ];
 
-const initialMembership = {
-  planId: "free",
-  status: "Active",
-  startedAt: "2026-01-01T00:00:00.000Z",
-  renewsAt: null,
-  autoRenew: false,
-  history: [{ id: "MB-1001", label: "Free membership activated", amount: 0, date: "2026-01-01T00:00:00.000Z", status: "Completed" }],
-};
-
-function readMembership() {
-  try {
-    return JSON.parse(window.localStorage.getItem("marketsphere:membership")) || initialMembership;
-  } catch {
-    return initialMembership;
-  }
-}
-
 export default function MembershipPage() {
-  const [membership, setMembership] = useState(readMembership);
+  const [membership, setMembership] = useState(() => getStored("marketsphere:membership", defaultMembership));
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [payment, setPayment] = useState({ method: "card", card: "", expiry: "", cvv: "", upi: "" });
   const [message, setMessage] = useState("");
@@ -57,7 +42,7 @@ export default function MembershipPage() {
 
   function persist(next) {
     setMembership(next);
-    window.localStorage.setItem("marketsphere:membership", JSON.stringify(next));
+    setStored("marketsphere:membership", next);
   }
 
   function subscribe(event) {

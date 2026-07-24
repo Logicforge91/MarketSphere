@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { CalendarClock, Check, Clock3, Gift, History, Mail, RefreshCw, Search, Send, ShieldCheck, Sparkles } from "lucide-react";
 import { money } from "../utils/format";
+import { defaultGiftCards } from "../data/commerceState";
+import { getStored, setStored } from "../utils/storage";
 
 const themes = [
   { id: "celebrate", name: "Celebrate", note: "For birthdays and milestones", className: "celebrate" },
@@ -9,21 +11,8 @@ const themes = [
   { id: "festive", name: "Festive", note: "For joyful occasions", className: "festive" },
 ];
 
-const initialCards = [
-  { code: "GIFT500", pin: "2408", amount: 500, balance: 500, theme: "celebrate", recipient: "You", email: "customer@marketsphere.in", deliveryDate: "2026-07-18", expiry: "2027-07-18", status: "Delivered", transactions: [{ id: "GC-501", type: "credit", label: "Gift card received", amount: 500, date: "2026-07-18T09:30:00.000Z" }] },
-  { code: "MSPH-2026-1500", pin: "8931", amount: 1500, balance: 850, theme: "minimal", recipient: "You", email: "customer@marketsphere.in", deliveryDate: "2026-06-12", expiry: "2027-06-12", status: "Redeemed", transactions: [{ id: "GC-488", type: "debit", label: "Used on order #MS204912", amount: 650, date: "2026-07-15T12:40:00.000Z" }, { id: "GC-421", type: "credit", label: "Gift card received", amount: 1500, date: "2026-06-12T08:00:00.000Z" }] },
-];
-
-function readCards() {
-  try {
-    return JSON.parse(window.localStorage.getItem("marketsphere:gift-cards")) || initialCards;
-  } catch {
-    return initialCards;
-  }
-}
-
 export default function GiftCardsPage() {
-  const [cards, setCards] = useState(readCards);
+  const [cards, setCards] = useState(() => getStored("marketsphere:gift-cards", defaultGiftCards));
   const [tab, setTab] = useState("purchase");
   const [theme, setTheme] = useState("celebrate");
   const [form, setForm] = useState({ amount: "1000", recipient: "", email: "", sender: "", message: "", deliveryDate: new Date().toISOString().slice(0, 10) });
@@ -34,7 +23,7 @@ export default function GiftCardsPage() {
 
   function persist(next) {
     setCards(next);
-    window.localStorage.setItem("marketsphere:gift-cards", JSON.stringify(next));
+    setStored("marketsphere:gift-cards", next);
   }
 
   function purchase(event) {

@@ -1,29 +1,11 @@
 import React, { useMemo, useState } from "react";
 import { AlertTriangle, ArrowDownLeft, ArrowUpRight, Check, Clock3, CreditCard, Download, Gift, History, IndianRupee, Plus, ShieldCheck, WalletCards, X } from "lucide-react";
 import { money } from "../utils/format";
-
-const initialWallet = {
-  cashBalance: 1250,
-  promotionalBalance: 300,
-  promotionalExpiry: "2026-08-31",
-  transactions: [
-    { id: "WTX-5012", type: "credit", category: "Refund", label: "Refund for order #MS205186", amount: 750, date: "2026-07-20T10:20:00.000Z", status: "Completed" },
-    { id: "WTX-4998", type: "credit", category: "Add money", label: "Added using UPI", amount: 500, date: "2026-07-18T08:15:00.000Z", status: "Completed" },
-    { id: "WTX-4931", type: "debit", category: "Payment", label: "Wallet payment for order #MS204912", amount: 1299, date: "2026-07-15T12:40:00.000Z", status: "Completed" },
-    { id: "WTX-4880", type: "credit", category: "Promotion", label: "MarketSphere Rewards bonus", amount: 300, date: "2026-07-10T09:00:00.000Z", status: "Promotional" },
-  ],
-};
-
-function readWallet() {
-  try {
-    return JSON.parse(window.localStorage.getItem("marketsphere:wallet")) || initialWallet;
-  } catch {
-    return initialWallet;
-  }
-}
+import { defaultWallet } from "../data/commerceState";
+import { getStored, setStored } from "../utils/storage";
 
 export default function WalletPage() {
-  const [wallet, setWallet] = useState(readWallet);
+  const [wallet, setWallet] = useState(() => getStored("marketsphere:wallet", defaultWallet));
   const [showAdd, setShowAdd] = useState(false);
   const [amount, setAmount] = useState("");
   const [method, setMethod] = useState("UPI");
@@ -34,7 +16,7 @@ export default function WalletPage() {
 
   function persist(next) {
     setWallet(next);
-    window.localStorage.setItem("marketsphere:wallet", JSON.stringify(next));
+    setStored("marketsphere:wallet", next);
   }
 
   function addMoney(event) {

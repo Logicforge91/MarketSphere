@@ -47,8 +47,7 @@ const TwoFactorPage = lazyPage(authenticationPages, "TwoFactorPage");
 const SessionManagementPage = lazyPage(authenticationPages, "SessionManagementPage");
 const DeleteAccountPage = lazyPage(authenticationPages, "DeleteAccountPage");
 
-const utilityPages = () => import("./pages/UtilityPages.jsx");
-const ComparePage = lazyPage(utilityPages, "ComparePage");
+const ComparePage = lazyPage(() => import("./pages/ComparePage.jsx"));
 
 const customerPages = () => import("./pages/CustomerPages.jsx");
 const AddressBookPage = lazyPage(customerPages, "AddressBookPage");

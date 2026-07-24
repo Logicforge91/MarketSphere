@@ -4,38 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useShop } from "../context/ShopContext";
 import { useAuth } from "../context/AuthContext";
 import { money } from "../utils/format";
-
-function readAddresses() {
-  try {
-    return JSON.parse(window.localStorage.getItem("marketsphere:addresses")) || [];
-  } catch {
-    return [];
-  }
-}
-
-function readWallet() {
-  try {
-    return JSON.parse(window.localStorage.getItem("marketsphere:wallet")) || { cashBalance: 1250, promotionalBalance: 300, transactions: [] };
-  } catch {
-    return { cashBalance: 1250, promotionalBalance: 300, transactions: [] };
-  }
-}
-
-function readGiftCards() {
-  try {
-    return JSON.parse(window.localStorage.getItem("marketsphere:gift-cards")) || [{ code: "GIFT500", pin: "2408", amount: 500, balance: 500, expiry: "2027-07-18", status: "Delivered", transactions: [] }];
-  } catch {
-    return [{ code: "GIFT500", pin: "2408", amount: 500, balance: 500, expiry: "2027-07-18", status: "Delivered", transactions: [] }];
-  }
-}
-
-function readMembership() {
-  try {
-    return JSON.parse(window.localStorage.getItem("marketsphere:membership")) || { planId: "free", status: "Active" };
-  } catch {
-    return { planId: "free", status: "Active" };
-  }
-}
+import { defaultGiftCards, defaultMembership, defaultWallet } from "../data/commerceState";
+import { getStored, setStored } from "../utils/storage";
 
 const deliveryMethods = [
   { id: "standard", name: "Standard delivery", detail: "3-5 business days", price: 99 },
@@ -86,8 +56,8 @@ export default function CheckoutPage() {
   const [checkoutMode, setCheckoutMode] = useState(isAuthenticated ? "member" : "guest");
   const [contact, setContact] = useState({ email: user?.email || "", phone: user?.mobile || "" });
   const [login, setLogin] = useState({ identifier: "", password: "" });
-  const [addresses, setAddresses] = useState(readAddresses);
-  const [shippingId, setShippingId] = useState(() => readAddresses().find((item) => item.primary)?.id || readAddresses()[0]?.id || "");
+  const [addresses, setAddresses] = useState(() => getStored("marketsphere:addresses", []));
+  const [shippingId, setShippingId] = useState(() => { const saved = getStored("marketsphere:addresses", []); return saved.find((item) => item.primary)?.id || saved[0]?.id || ""; });
   const [billingId, setBillingId] = useState("same");
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [newAddress, setNewAddress] = useState({ name: "", line1: "", city: "", state: "", pincode: "", type: "Home" });
@@ -102,7 +72,7 @@ export default function CheckoutPage() {
   const [coupon, setCoupon] = useState("");
   const [showCoupons, setShowCoupons] = useState(false);
   const [giftCard, setGiftCard] = useState("");
-  const [giftCards] = useState(readGiftCards);
+  const [giftCards] = useState(() => getStored("marketsphere:gift-cards", defaultGiftCards));
   const [rewardPoints, setRewardPoints] = useState(0);
   const [giftWrap, setGiftWrap] = useState(false);
   const [orderNotes, setOrderNotes] = useState("");
@@ -110,8 +80,8 @@ export default function CheckoutPage() {
   const [paymentDetails, setPaymentDetails] = useState({ cardNumber: "", name: "", expiry: "", cvv: "", upi: "", bank: "HDFC Bank", emi: "3 months", authCode: "" });
   const [paymentStatus, setPaymentStatus] = useState("idle");
   const [paymentError, setPaymentError] = useState("");
-  const [wallet] = useState(readWallet);
-  const [membership] = useState(readMembership);
+  const [wallet] = useState(() => getStored("marketsphere:wallet", defaultWallet));
+  const [membership] = useState(() => getStored("marketsphere:membership", defaultMembership));
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -181,7 +151,7 @@ export default function CheckoutPage() {
     const next = [...addresses, address];
     setAddresses(next);
     setShippingId(address.id);
-    window.localStorage.setItem("marketsphere:addresses", JSON.stringify(next));
+    setStored("marketsphere:addresses", next);
     setShowAddressForm(false);
   }
 
@@ -241,12 +211,12 @@ export default function CheckoutPage() {
     if (paymentMethod === "wallet") {
       const promotionalUsed = Math.min(wallet.promotionalBalance, calculations.total);
       const cashUsed = Math.min(wallet.cashBalance, calculations.total - promotionalUsed);
-      window.localStorage.setItem("marketsphere:wallet", JSON.stringify({
+      setStored("marketsphere:wallet", {
         ...wallet,
         promotionalBalance: wallet.promotionalBalance - promotionalUsed,
         cashBalance: wallet.cashBalance - cashUsed,
         transactions: [{ id: transactionId, type: "debit", category: "Payment", label: "Wallet payment at checkout", amount: promotionalUsed + cashUsed, date: new Date().toISOString(), status: promotionalUsed + cashUsed >= calculations.total ? "Completed" : "Part payment" }, ...(wallet.transactions || [])],
-      }));
+      });
     }
     if (giftCard && calculations.giftDiscount > 0) {
       const nextCards = giftCards.map((card) => card.code === giftCard ? {
@@ -255,7 +225,7 @@ export default function CheckoutPage() {
         status: card.balance - calculations.giftDiscount > 0 ? "Partially redeemed" : "Redeemed",
         transactions: [{ id: `GC-${Date.now().toString().slice(-5)}`, type: "debit", label: "Used at checkout", amount: calculations.giftDiscount, date: new Date().toISOString() }, ...(card.transactions || [])],
       } : card);
-      window.localStorage.setItem("marketsphere:gift-cards", JSON.stringify(nextCards));
+      setStored("marketsphere:gift-cards", nextCards);
     }
     setPaymentStatus("verified");
     window.sessionStorage.setItem(paymentKey, "completed");

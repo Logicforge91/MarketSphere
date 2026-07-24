@@ -1,17 +1,10 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { getStored } from "../utils/storage";
 
 const AUTH_KEY = "marketsphere:auth-session";
 const DEVICES_KEY = "marketsphere:auth-devices";
 
 const AuthContext = createContext(null);
-
-function readStorage(key, fallback) {
-  try {
-    return JSON.parse(window.localStorage.getItem(key)) || fallback;
-  } catch {
-    return fallback;
-  }
-}
 
 function createId(prefix) {
   return `${prefix}-${globalThis.crypto?.randomUUID?.() || Date.now()}`;
@@ -29,8 +22,8 @@ function currentDevice() {
 }
 
 export function AuthProvider({ children }) {
-  const [session, setSession] = useState(() => readStorage(AUTH_KEY, null));
-  const [devices, setDevices] = useState(() => readStorage(DEVICES_KEY, []));
+  const [session, setSession] = useState(() => getStored(AUTH_KEY, null));
+  const [devices, setDevices] = useState(() => getStored(DEVICES_KEY, []));
   const [challenge, setChallenge] = useState(null);
 
   const persistSession = useCallback((nextSession) => {
