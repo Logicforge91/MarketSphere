@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Bell, Camera, Check, ChevronRight, CreditCard, Download, Eye, Globe2, KeyRound, LockKeyhole, LogOut, MapPin, Save, ShieldCheck, Smartphone, Trash2, UserRound, WalletCards, X } from "lucide-react";
+import { Bell, Camera, Check, ChevronRight, CreditCard, Crown, Download, Eye, Gift, Globe2, KeyRound, LockKeyhole, LogOut, MapPin, Save, ShieldCheck, Sparkles, Smartphone, Trash2, UserRound, WalletCards, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useShop } from "../context/ShopContext";
@@ -93,6 +93,9 @@ export default function AccountPage() {
         <button className={section === "security" ? "active" : ""} onClick={() => setSection("security")}><ShieldCheck /> Security</button>
         <Link to="/addresses"><MapPin /> Saved addresses <b>{addresses.length}</b></Link>
         <Link to="/payment-methods"><WalletCards /> Payment methods</Link>
+        <Link to="/gift-cards"><Gift /> Gift cards</Link>
+        <Link to="/membership"><Crown /> Membership</Link>
+        <Link to="/recommendations"><Sparkles /> Recommendations</Link>
         <button onClick={signOut}><LogOut /> Sign out</button>
       </aside>
 

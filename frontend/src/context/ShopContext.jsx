@@ -25,6 +25,14 @@ export function ShopProvider({ children }) {
   const [notification, setNotification] = useState("");
   const [orders, setOrders] = useState(() => readStoredState("marketsphere:orders", seedOrders));
   const [returnRequests, setReturnRequests] = useState(() => readStoredState("marketsphere:returns", []));
+  const [reviews, setReviews] = useState(() => readStoredState("marketsphere:reviews", [
+    { id: "REV-SEED-1", productSlug: "floral-midi-dress", author: "Aarav S.", title: "Excellent quality and fit", body: "The product matched the photos and arrived beautifully packed.", productRating: 5, sellerRating: 5, deliveryRating: 4, verified: true, likes: 42, dislikes: 2, moderationStatus: "Published", createdAt: "2026-07-12T10:30:00.000Z", media: { images: [], video: null } },
+    { id: "REV-SEED-2", productSlug: "floral-midi-dress", author: "Meera K.", title: "Worth the price", body: "Comfortable, well finished and delivery was quicker than expected.", productRating: 4, sellerRating: 4, deliveryRating: 5, verified: true, likes: 18, dislikes: 1, moderationStatus: "Published", createdAt: "2026-07-16T08:10:00.000Z", media: { images: [], video: null } },
+  ]));
+  const [productQuestions, setProductQuestions] = useState(() => readStoredState("marketsphere:questions", [
+    { id: "QUE-SEED-1", productSlug: "*", author: "Priya M.", question: "Is the colour true to the product images?", createdAt: "2026-07-15T09:15:00.000Z", status: "Answered", notify: true, reports: [], answer: { id: "ANS-SEED-1", author: "MarketSphere Select", seller: true, body: "Yes. Minor variation may occur depending on screen settings.", createdAt: "2026-07-15T11:20:00.000Z", helpful: 24, reports: [] } },
+    { id: "QUE-SEED-2", productSlug: "*", author: "Rohan K.", question: "Does this include the original brand packaging?", createdAt: "2026-07-13T13:40:00.000Z", status: "Answered", notify: false, reports: [], answer: { id: "ANS-SEED-2", author: "MarketSphere Select", seller: true, body: "Yes, the item ships in its original packaging with all included accessories.", createdAt: "2026-07-13T16:05:00.000Z", helpful: 11, reports: [] } },
+  ]));
 
   const products = useMemo(() => {
     const filtered = catalog.filter((product) => {
@@ -66,6 +74,14 @@ export function ShopProvider({ children }) {
   useEffect(() => {
     window.localStorage.setItem("marketsphere:returns", JSON.stringify(returnRequests));
   }, [returnRequests]);
+
+  useEffect(() => {
+    window.localStorage.setItem("marketsphere:reviews", JSON.stringify(reviews));
+  }, [reviews]);
+
+  useEffect(() => {
+    window.localStorage.setItem("marketsphere:questions", JSON.stringify(productQuestions));
+  }, [productQuestions]);
 
   const addToCart = useCallback((product) => {
     setCart((items) => {
@@ -256,6 +272,51 @@ export function ShopProvider({ children }) {
     setNotification("Return request cancelled");
   }, [updateReturnRequest]);
 
+  const createReview = useCallback((review) => {
+    const record = { ...review, id: `REV${Date.now().toString().slice(-9)}`, createdAt: new Date().toISOString(), likes: 0, dislikes: 0, moderationStatus: "Pending moderation", reports: [] };
+    setReviews((items) => [record, ...items]);
+    setNotification("Review submitted for moderation");
+    return record;
+  }, []);
+
+  const updateReview = useCallback((reviewId, updates) => {
+    setReviews((items) => items.map((review) => review.id === reviewId ? { ...review, ...updates, editedAt: new Date().toISOString(), moderationStatus: "Pending moderation" } : review));
+  }, []);
+
+  const deleteReview = useCallback((reviewId) => {
+    setReviews((items) => items.filter((review) => review.id !== reviewId));
+    setNotification("Review deleted");
+  }, []);
+
+  const voteReview = useCallback((reviewId, vote) => {
+    setReviews((items) => items.map((review) => review.id === reviewId ? { ...review, [vote]: (review[vote] || 0) + 1 } : review));
+  }, []);
+
+  const reportReview = useCallback((reviewId, reason) => {
+    setReviews((items) => items.map((review) => review.id === reviewId ? { ...review, reports: [...(review.reports || []), { reason, date: new Date().toISOString() }], moderationStatus: "Under review" } : review));
+    setNotification("Review reported to moderation");
+  }, []);
+
+  const askProductQuestion = useCallback((question) => {
+    const record = { ...question, id: `QUE${Date.now().toString().slice(-9)}`, createdAt: new Date().toISOString(), status: "Awaiting answer", reports: [], answer: null };
+    setProductQuestions((items) => [record, ...items]);
+    setNotification(question.notify ? "Question submitted. We will notify you when it is answered." : "Question submitted");
+    return record;
+  }, []);
+
+  const markAnswerHelpful = useCallback((questionId) => {
+    setProductQuestions((items) => items.map((question) => question.id === questionId && question.answer ? { ...question, answer: { ...question.answer, helpful: (question.answer.helpful || 0) + 1 } } : question));
+  }, []);
+
+  const reportQuestionContent = useCallback((questionId, target, reason) => {
+    setProductQuestions((items) => items.map((question) => {
+      if (question.id !== questionId) return question;
+      if (target === "answer" && question.answer) return { ...question, answer: { ...question.answer, reports: [...(question.answer.reports || []), { reason, date: new Date().toISOString() }] } };
+      return { ...question, reports: [...(question.reports || []), { reason, date: new Date().toISOString() }] };
+    }));
+    setNotification("Content reported to moderation");
+  }, []);
+
   const reorder = useCallback((orderId) => {
     const order = orders.find((item) => item.id === orderId);
     if (!order?.items?.length) return;
@@ -277,6 +338,7 @@ export function ShopProvider({ children }) {
     activeCategory,
     addToCart,
     addToCompare,
+    askProductQuestion,
     cart,
     cartTotal,
     cancelOrder,
@@ -284,14 +346,21 @@ export function ShopProvider({ children }) {
     cancelReturnRequest,
     clearNotification,
     compareProducts,
+    createReview,
     createReturnRequest,
+    deleteReview,
     latestOrder,
+    markAnswerHelpful,
     notification,
     orders,
     priceLimit,
     products,
+    productQuestions,
     query,
+    reportReview,
+    reportQuestionContent,
     returnRequests,
+    reviews,
     removeFromCart,
     removeFromCompare,
     reorder,
@@ -309,13 +378,16 @@ export function ShopProvider({ children }) {
     toggleWishlist,
     updateCartVariant,
     updateOrder,
+    updateReview,
     updateReturnRequest,
     updateQty,
     wishlist,
+    voteReview,
   }), [
     activeCategory,
     addToCart,
     addToCompare,
+    askProductQuestion,
     cart,
     cartTotal,
     cancelOrder,
@@ -323,14 +395,21 @@ export function ShopProvider({ children }) {
     cancelReturnRequest,
     clearNotification,
     compareProducts,
+    createReview,
     createReturnRequest,
+    deleteReview,
     latestOrder,
+    markAnswerHelpful,
     notification,
     orders,
     priceLimit,
     products,
+    productQuestions,
     query,
+    reportReview,
+    reportQuestionContent,
     returnRequests,
+    reviews,
     removeFromCart,
     removeFromCompare,
     reorder,
@@ -344,9 +423,11 @@ export function ShopProvider({ children }) {
     toggleWishlist,
     updateCartVariant,
     updateOrder,
+    updateReview,
     updateReturnRequest,
     updateQty,
     wishlist,
+    voteReview,
   ]);
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;

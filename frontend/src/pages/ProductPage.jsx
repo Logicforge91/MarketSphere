@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ArrowLeft, SlidersHorizontal } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import BenefitRow from "../components/common/BenefitRow";
@@ -13,6 +13,25 @@ export default function ProductPage() {
   const { slug } = useParams();
   const { addToCart, addToCompare, toggleWishlist } = useShop();
   const product = getProductBySlug(slug);
+
+  useEffect(() => {
+    if (!product) return;
+    let history = [];
+    try {
+      history = JSON.parse(window.localStorage.getItem("marketsphere:recently-viewed")) || [];
+    } catch {
+      history = [];
+    }
+    const previous = history.find((item) => item.slug === product.slug);
+    const entry = { id: product.id, slug: product.slug, viewedAt: new Date().toISOString(), viewCount: (previous?.viewCount || 0) + 1 };
+    window.localStorage.setItem("marketsphere:recently-viewed", JSON.stringify([entry, ...history.filter((item) => item.slug !== product.slug)].slice(0, 24)));
+    try {
+      const sync = JSON.parse(window.localStorage.getItem("marketsphere:history-sync"));
+      if (sync?.enabled) window.localStorage.setItem("marketsphere:history-sync", JSON.stringify({ ...sync, lastSyncedAt: new Date().toISOString() }));
+    } catch {
+      // Local history remains available when sync metadata is unavailable.
+    }
+  }, [product]);
 
   if (!product) {
     return (

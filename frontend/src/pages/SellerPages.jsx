@@ -6,6 +6,7 @@ import { catalog } from "../data/catalog";
 import { getSeller, sellerProducts, sellers } from "../data/sellerData";
 import { money } from "../utils/format";
 import { useShop } from "../context/ShopContext";
+import ShareDialog from "../components/common/ShareDialog";
 
 export function StoreProfilePage() {
   const { slug } = useParams();
@@ -20,7 +21,7 @@ export function StoreProfilePage() {
       <nav className="seller-breadcrumb"><Link to="/">Home</Link><ChevronRight size={13} /><span>Stores</span><ChevronRight size={13} /><strong>{seller.name}</strong></nav>
       <section className="seller-profile-hero">
         <img src={seller.image} alt={`${seller.name} storefront`} />
-        <div className="seller-profile-copy"><div className="seller-logo"><Store /></div><span>{seller.category}</span><h1>{seller.name} {seller.verified && <BadgeCheck size={20} />}</h1><p>{seller.description}</p><div className="seller-metrics"><div><strong>{seller.rating}</strong><span><Star size={12} fill="currentColor" /> Seller rating</span></div><div><strong>{seller.reviewCount.toLocaleString()}</strong><span>Customer reviews</span></div><div><strong>{seller.followers}</strong><span>Followers</span></div></div><div className="seller-hero-actions"><button className={following ? "secondary" : "primary"} onClick={() => setFollowing((value) => !value)}><UserPlus size={15} /> {following ? "Following" : "Follow store"}</button><button className="secondary" onClick={() => setNotice("Message request opened")}><MessageCircle size={15} /> Contact seller</button><button className="icon-button" title="Report seller" onClick={() => setNotice("Report submitted for review")}><Flag size={16} /></button></div></div>
+        <div className="seller-profile-copy"><div className="seller-logo"><Store /></div><span>{seller.category}</span><h1>{seller.name} {seller.verified && <BadgeCheck size={20} />}</h1><p>{seller.description}</p><div className="seller-metrics"><div><strong>{seller.rating}</strong><span><Star size={12} fill="currentColor" /> Seller rating</span></div><div><strong>{seller.reviewCount.toLocaleString()}</strong><span>Customer reviews</span></div><div><strong>{seller.followers}</strong><span>Followers</span></div></div><div className="seller-hero-actions"><button className={following ? "secondary" : "primary"} onClick={() => setFollowing((value) => !value)}><UserPlus size={15} /> {following ? "Following" : "Follow store"}</button><button className="secondary" onClick={() => setNotice("Message request opened")}><MessageCircle size={15} /> Contact seller</button><ShareDialog className="secondary" title={seller.name} text={`Shop ${seller.name} on MarketSphere`} path={`/store/${seller.slug}`} type="store">Share store</ShareDialog><button className="icon-button" title="Report seller" onClick={() => setNotice("Report submitted for review")}><Flag size={16} /></button></div></div>
       </section>
 
       {notice && <p className="seller-notice" role="status">{notice}</p>}

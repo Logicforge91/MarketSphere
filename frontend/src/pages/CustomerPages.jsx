@@ -326,6 +326,28 @@ const policyContent = {
       ["Marketplace content", "Product names, images, editorial content, and interface elements may not be reproduced without permission."],
     ],
   },
+  refund: {
+    eyebrow: "Money back",
+    title: "Refund policy",
+    copy: "How approved refunds are calculated, issued, and tracked.",
+    sections: [
+      ["Refund eligibility", "Refunds are issued after an eligible cancellation or after a returned product passes inspection. Any non-refundable fees are shown before confirmation."],
+      ["Refund methods", "Approved amounts can return to the original payment method, MarketSphere Wallet, or an eligible bank account selected during the request."],
+      ["Processing timelines", "Wallet refunds are usually immediate after approval. Card, UPI, and bank refunds generally take five to seven business days."],
+      ["Partial and failed refunds", "Item-level returns receive partial refunds. If a transfer fails, you can update details and retry from the order refund timeline."],
+    ],
+  },
+  return: {
+    eyebrow: "Easy resolutions",
+    title: "Return and exchange policy",
+    copy: "Eligibility, pickup, replacement, and exchange information.",
+    sections: [
+      ["Return window", "Most eligible products may be returned within seven days of delivery. The exact window and exclusions appear on each product page."],
+      ["Product condition", "Items must be unused, unwashed, and returned with original packaging, labels, accessories, and authenticity material."],
+      ["Pickup and inspection", "Choose an eligible pickup address and slot. Refund or replacement processing begins after the product passes inspection."],
+      ["Replacement and exchange", "Eligible products may be replaced or exchanged for available size or colour variants. Unavailable variants can be refunded instead."],
+    ],
+  },
 };
 
 function PolicyPage({ type }) {
@@ -351,6 +373,14 @@ export function PrivacyPage() {
 
 export function TermsPage() {
   return <PolicyPage type="terms" />;
+}
+
+export function RefundPolicyPage() {
+  return <PolicyPage type="refund" />;
+}
+
+export function ReturnPolicyPage() {
+  return <PolicyPage type="return" />;
 }
 
 export function CareersPage() {

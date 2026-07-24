@@ -13,6 +13,30 @@ function readAddresses() {
   }
 }
 
+function readWallet() {
+  try {
+    return JSON.parse(window.localStorage.getItem("marketsphere:wallet")) || { cashBalance: 1250, promotionalBalance: 300, transactions: [] };
+  } catch {
+    return { cashBalance: 1250, promotionalBalance: 300, transactions: [] };
+  }
+}
+
+function readGiftCards() {
+  try {
+    return JSON.parse(window.localStorage.getItem("marketsphere:gift-cards")) || [{ code: "GIFT500", pin: "2408", amount: 500, balance: 500, expiry: "2027-07-18", status: "Delivered", transactions: [] }];
+  } catch {
+    return [{ code: "GIFT500", pin: "2408", amount: 500, balance: 500, expiry: "2027-07-18", status: "Delivered", transactions: [] }];
+  }
+}
+
+function readMembership() {
+  try {
+    return JSON.parse(window.localStorage.getItem("marketsphere:membership")) || { planId: "free", status: "Active" };
+  } catch {
+    return { planId: "free", status: "Active" };
+  }
+}
+
 const deliveryMethods = [
   { id: "standard", name: "Standard delivery", detail: "3-5 business days", price: 99 },
   { id: "express", name: "Express delivery", detail: "1-2 business days", price: 149 },
@@ -78,6 +102,7 @@ export default function CheckoutPage() {
   const [coupon, setCoupon] = useState("");
   const [showCoupons, setShowCoupons] = useState(false);
   const [giftCard, setGiftCard] = useState("");
+  const [giftCards] = useState(readGiftCards);
   const [rewardPoints, setRewardPoints] = useState(0);
   const [giftWrap, setGiftWrap] = useState(false);
   const [orderNotes, setOrderNotes] = useState("");
@@ -85,6 +110,8 @@ export default function CheckoutPage() {
   const [paymentDetails, setPaymentDetails] = useState({ cardNumber: "", name: "", expiry: "", cvv: "", upi: "", bank: "HDFC Bank", emi: "3 months", authCode: "" });
   const [paymentStatus, setPaymentStatus] = useState("idle");
   const [paymentError, setPaymentError] = useState("");
+  const [wallet] = useState(readWallet);
+  const [membership] = useState(readMembership);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -122,16 +149,20 @@ export default function CheckoutPage() {
     if (activeCoupon?.code === "UPI100") couponDiscount = 100;
     const bogoDiscount = cart.some((item) => (item.qty || 1) >= 2) ? Math.min(...cart.filter((item) => (item.qty || 1) >= 2).map((item) => item.price)) : 0;
     const bundleDiscount = cart.length >= 3 ? 300 : 0;
+    const premiumActive = membership.planId?.startsWith("premium") && ["Active", "Cancellation scheduled"].includes(membership.status);
+    const memberDiscount = premiumActive ? Math.min(cartTotal * .05, 1500) : 0;
     const automaticDiscount = Math.max(bogoDiscount, bundleDiscount, cartTotal >= 3000 ? 200 : 0);
-    const giftDiscount = giftCard === "GIFT500" ? Math.min(500, cartTotal - couponDiscount) : 0;
-    const rewardDiscount = Math.min(rewardPoints, Math.max(0, cartTotal - couponDiscount - automaticDiscount - giftDiscount));
-    const taxable = Math.max(0, cartTotal - couponDiscount - automaticDiscount - giftDiscount - rewardDiscount);
+    const selectedGiftCard = giftCards.find((item) => item.code === giftCard && item.balance > 0 && new Date(`${item.expiry}T23:59:59`) >= new Date());
+    const giftDiscount = selectedGiftCard ? Math.min(selectedGiftCard.balance, Math.max(0, cartTotal - couponDiscount - automaticDiscount - memberDiscount)) : 0;
+    const rewardDiscount = Math.min(rewardPoints, Math.max(0, cartTotal - couponDiscount - automaticDiscount - memberDiscount - giftDiscount));
+    const taxable = Math.max(0, cartTotal - couponDiscount - automaticDiscount - memberDiscount - giftDiscount - rewardDiscount);
     const tax = Math.round(taxable * .05);
-    const shipping = activeCoupon?.freeShipping || (method.id === "standard" && taxable >= 1999) ? 0 : method.price;
+    const memberFreeDelivery = premiumActive && (method.id === "standard" || (membership.planId === "premium-annual" && method.id === "express"));
+    const shipping = activeCoupon?.freeShipping || memberFreeDelivery || (method.id === "standard" && taxable >= 1999) ? 0 : method.price;
     const wrapping = giftWrap ? 99 : 0;
     const automaticLabel = bogoDiscount >= Math.max(bundleDiscount, 200) ? "Buy one, get one" : bundleDiscount >= 200 ? "Bundle offer" : "Automatic promotion";
-    return { couponDiscount, automaticDiscount, automaticLabel, giftDiscount, rewardDiscount, shipping, tax, wrapping, total: taxable + tax + shipping + wrapping };
-  }, [cart, cartTotal, coupon, giftCard, giftWrap, method.id, method.price, orders, paymentMethod, rewardPoints]);
+    return { couponDiscount, automaticDiscount, automaticLabel, memberDiscount, giftDiscount, rewardDiscount, shipping, tax, wrapping, total: taxable + tax + shipping + wrapping };
+  }, [cart, cartTotal, coupon, giftCard, giftCards, giftWrap, membership, method.id, method.price, orders, paymentMethod, rewardPoints]);
 
   if (!cart.length) return <main className="checkout-empty"><ShoppingBag /><h1>Your bag is empty</h1><p>Add products before starting checkout.</p><Link className="primary" to="/products">Explore products</Link></main>;
 
@@ -158,7 +189,9 @@ export default function CheckoutPage() {
     const value = (type === "coupon" ? couponInput : giftInput).trim().toUpperCase();
     const promotion = promotionCatalog.find((item) => item.code === value);
     const reason = promotion && promotionEligibility(promotion, { cart, cartTotal, orders, paymentMethod });
-    const valid = type === "coupon" ? promotion && !reason : value === "GIFT500";
+    const storedCard = giftCards.find((item) => item.code === value);
+    const giftValid = storedCard && storedCard.balance > 0 && new Date(`${storedCard.expiry}T23:59:59`) >= new Date();
+    const valid = type === "coupon" ? promotion && !reason : giftValid;
     if (!valid) return setMessage(reason || `Enter a valid ${type === "coupon" ? "coupon" : "gift card"} code.`);
     if (type === "coupon") {
       setCoupon(value);
@@ -205,6 +238,25 @@ export default function CheckoutPage() {
       return;
     }
     const transactionId = paymentMethod === "cod" ? null : `PAY${Date.now().toString().slice(-10)}`;
+    if (paymentMethod === "wallet") {
+      const promotionalUsed = Math.min(wallet.promotionalBalance, calculations.total);
+      const cashUsed = Math.min(wallet.cashBalance, calculations.total - promotionalUsed);
+      window.localStorage.setItem("marketsphere:wallet", JSON.stringify({
+        ...wallet,
+        promotionalBalance: wallet.promotionalBalance - promotionalUsed,
+        cashBalance: wallet.cashBalance - cashUsed,
+        transactions: [{ id: transactionId, type: "debit", category: "Payment", label: "Wallet payment at checkout", amount: promotionalUsed + cashUsed, date: new Date().toISOString(), status: promotionalUsed + cashUsed >= calculations.total ? "Completed" : "Part payment" }, ...(wallet.transactions || [])],
+      }));
+    }
+    if (giftCard && calculations.giftDiscount > 0) {
+      const nextCards = giftCards.map((card) => card.code === giftCard ? {
+        ...card,
+        balance: card.balance - calculations.giftDiscount,
+        status: card.balance - calculations.giftDiscount > 0 ? "Partially redeemed" : "Redeemed",
+        transactions: [{ id: `GC-${Date.now().toString().slice(-5)}`, type: "debit", label: "Used at checkout", amount: calculations.giftDiscount, date: new Date().toISOString() }, ...(card.transactions || [])],
+      } : card);
+      window.localStorage.setItem("marketsphere:gift-cards", JSON.stringify(nextCards));
+    }
     setPaymentStatus("verified");
     window.sessionStorage.setItem(paymentKey, "completed");
     const order = placeOrder({
@@ -271,7 +323,7 @@ export default function CheckoutPage() {
               {paymentMethod === "card" && <div className="payment-field-grid"><label className="wide">Card number<input inputMode="numeric" maxLength="19" value={paymentDetails.cardNumber} onChange={(event) => setPaymentDetails({ ...paymentDetails, cardNumber: event.target.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim() })} placeholder="1234 5678 9012 3456" /></label><label className="wide">Name on card<input value={paymentDetails.name} onChange={(event) => setPaymentDetails({ ...paymentDetails, name: event.target.value })} placeholder="As printed on card" /></label><label>Expiry<input maxLength="5" value={paymentDetails.expiry} onChange={(event) => setPaymentDetails({ ...paymentDetails, expiry: event.target.value })} placeholder="MM/YY" /></label><label>CVV<input type="password" inputMode="numeric" maxLength="3" value={paymentDetails.cvv} onChange={(event) => setPaymentDetails({ ...paymentDetails, cvv: event.target.value.replace(/\D/g, "") })} placeholder="•••" /></label></div>}
               {paymentMethod === "upi" && <div className="upi-payment"><label>UPI ID<input value={paymentDetails.upi} onChange={(event) => setPaymentDetails({ ...paymentDetails, upi: event.target.value })} placeholder="name@bank" /></label><button className="secondary" onClick={() => setMessage(/^[\w.-]+@[\w.-]+$/.test(paymentDetails.upi) ? "UPI ID verified successfully." : "Enter a valid UPI ID.")}>Verify UPI</button><div className="upi-apps"><button>G Pay</button><button>PhonePe</button><button>Paytm</button></div></div>}
               {paymentMethod === "netbanking" && <label className="payment-select">Select bank<select value={paymentDetails.bank} onChange={(event) => setPaymentDetails({ ...paymentDetails, bank: event.target.value })}><option>HDFC Bank</option><option>ICICI Bank</option><option>State Bank of India</option><option>Axis Bank</option><option>Kotak Mahindra Bank</option></select></label>}
-              {paymentMethod === "wallet" && <div className="wallet-balance"><WalletCards /><div><strong>Rs. 1,250 available</strong><span>{calculations.total > 1250 ? `${money(calculations.total - 1250)} will be charged using a backup method.` : "Your wallet covers this order."}</span></div></div>}
+              {paymentMethod === "wallet" && <div className="wallet-balance"><WalletCards /><div><strong>{money(wallet.cashBalance + wallet.promotionalBalance)} available</strong><span>{calculations.total > wallet.cashBalance + wallet.promotionalBalance ? `${money(calculations.total - wallet.cashBalance - wallet.promotionalBalance)} will be charged using a backup method.` : "Your wallet covers this order. Promotional balance is used first."}</span></div></div>}
               {paymentMethod === "emi" && <label className="payment-select">Choose EMI plan<select value={paymentDetails.emi} onChange={(event) => setPaymentDetails({ ...paymentDetails, emi: event.target.value })}><option>3 months · {money(Math.ceil(calculations.total / 3))}/month</option><option>6 months · {money(Math.ceil(calculations.total / 6))}/month</option><option>12 months · {money(Math.ceil(calculations.total / 12))}/month</option></select></label>}
               {paymentMethod === "bnpl" && <div className="wallet-balance"><ShieldCheck /><div><strong>Pay in 30 days</strong><span>Identity verification and provider approval are required.</span></div><button className="secondary" onClick={() => setMessage("Buy now, pay later eligibility verified.")}>Check eligibility</button></div>}
               {paymentMethod === "cod" && <div className="wallet-balance"><PackageCheck /><div><strong>Pay at delivery</strong><span>Keep the exact amount ready. A verification OTP may be required.</span></div></div>}
@@ -291,7 +343,7 @@ export default function CheckoutPage() {
           <footer className="checkout-stage-actions">{step > 1 && <button className="secondary" onClick={() => setStep((value) => value - 1)}>Back</button>}{step < 4 ? <button className="primary" onClick={continueStep}>Continue</button> : <button className="primary" disabled={!reviewValid || paymentStatus === "processing"} onClick={confirmOrder}>{paymentStatus === "processing" ? "Verifying payment..." : paymentStatus === "failed" ? "Retry secure payment" : "Place order securely"}</button>}</footer>
         </section>
 
-        <aside className="checkout-summary"><h2>Price summary</h2><div className="checkout-summary-items">{cart.map((item) => <p key={item.name}><span>{item.name} × {item.qty || 1}</span><strong>{money(item.price * (item.qty || 1))}</strong></p>)}</div><div className="checkout-summary-lines"><p><span>Subtotal</span><strong>{money(cartTotal)}</strong></p>{calculations.couponDiscount > 0 && <p><span>Coupon · {coupon}</span><strong className="saving">-{money(calculations.couponDiscount)}</strong></p>}{calculations.automaticDiscount > 0 && <p><span>{calculations.automaticLabel}</span><strong className="saving">-{money(calculations.automaticDiscount)}</strong></p>}{calculations.giftDiscount > 0 && <p><span>Gift card</span><strong className="saving">-{money(calculations.giftDiscount)}</strong></p>}{calculations.rewardDiscount > 0 && <p><span>Rewards</span><strong className="saving">-{money(calculations.rewardDiscount)}</strong></p>}<p><span>Tax summary (5%)</span><strong>{money(calculations.tax)}</strong></p><p><span>Shipping</span><strong>{calculations.shipping ? money(calculations.shipping) : "Free"}</strong></p>{giftWrap && <p><span>Gift wrapping</span><strong>{money(calculations.wrapping)}</strong></p>}</div><div className="checkout-total"><span>Total payable</span><strong>{money(calculations.total)}</strong></div><p className="checkout-secure-note"><LockKeyhole size={13} /> Payments are encrypted and securely processed.</p></aside>
+        <aside className="checkout-summary"><h2>Price summary</h2><div className="checkout-summary-items">{cart.map((item) => <p key={item.name}><span>{item.name} × {item.qty || 1}</span><strong>{money(item.price * (item.qty || 1))}</strong></p>)}</div><div className="checkout-summary-lines"><p><span>Subtotal</span><strong>{money(cartTotal)}</strong></p>{calculations.couponDiscount > 0 && <p><span>Coupon · {coupon}</span><strong className="saving">-{money(calculations.couponDiscount)}</strong></p>}{calculations.automaticDiscount > 0 && <p><span>{calculations.automaticLabel}</span><strong className="saving">-{money(calculations.automaticDiscount)}</strong></p>}{calculations.memberDiscount > 0 && <p><span>Premium member discount</span><strong className="saving">-{money(calculations.memberDiscount)}</strong></p>}{calculations.giftDiscount > 0 && <p><span>Gift card</span><strong className="saving">-{money(calculations.giftDiscount)}</strong></p>}{calculations.rewardDiscount > 0 && <p><span>Rewards</span><strong className="saving">-{money(calculations.rewardDiscount)}</strong></p>}<p><span>Tax summary (5%)</span><strong>{money(calculations.tax)}</strong></p><p><span>Shipping</span><strong>{calculations.shipping ? money(calculations.shipping) : "Free"}</strong></p>{giftWrap && <p><span>Gift wrapping</span><strong>{money(calculations.wrapping)}</strong></p>}</div><div className="checkout-total"><span>Total payable</span><strong>{money(calculations.total)}</strong></div><p className="checkout-secure-note"><LockKeyhole size={13} /> Payments are encrypted and securely processed.</p></aside>
       </div>
     </main>
   );
