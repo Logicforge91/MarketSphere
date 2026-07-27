@@ -1,17 +1,12 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { getStored, setStored } from "../utils/storage";
 
 const AUTH_KEY = "marketsphere:auth-session";
 const DEVICES_KEY = "marketsphere:auth-devices";
+const HISTORY_KEY = "marketsphere:login-history";
+const SESSION_TIMEOUT = 1000 * 60 * 30;
 
 const AuthContext = createContext(null);
-
-function readStorage(key, fallback) {
-  try {
-    return JSON.parse(window.localStorage.getItem(key)) || fallback;
-  } catch {
-    return fallback;
-  }
-}
 
 function createId(prefix) {
   return `${prefix}-${globalThis.crypto?.randomUUID?.() || Date.now()}`;
@@ -29,26 +24,38 @@ function currentDevice() {
 }
 
 export function AuthProvider({ children }) {
-  const [session, setSession] = useState(() => readStorage(AUTH_KEY, null));
-  const [devices, setDevices] = useState(() => readStorage(DEVICES_KEY, []));
+  const [session, setSession] = useState(() => getStored(AUTH_KEY, null));
+  const [devices, setDevices] = useState(() => getStored(DEVICES_KEY, []));
   const [challenge, setChallenge] = useState(null);
+  const [loginHistory, setLoginHistory] = useState(() => getStored(HISTORY_KEY, []));
+  const [securityAlert, setSecurityAlert] = useState("");
 
   const persistSession = useCallback((nextSession) => {
     setSession(nextSession);
-    if (nextSession) window.localStorage.setItem(AUTH_KEY, JSON.stringify(nextSession));
+    if (nextSession) setStored(AUTH_KEY, nextSession);
     else window.localStorage.removeItem(AUTH_KEY);
   }, []);
 
   const createSession = useCallback((user) => {
+    const previous = devices[0];
+    const suspicious = Boolean(previous && previous.platform !== (navigator.platform || "Unknown device"));
     const nextSession = {
       accessToken: createId("demo-token"),
-      expiresAt: Date.now() + 1000 * 60 * 60 * 24 * 7,
+      expiresAt: Date.now() + SESSION_TIMEOUT,
+      lastActivityAt: Date.now(),
       user,
     };
     const device = currentDevice();
     const nextDevices = [device, ...devices.map((item) => ({ ...item, current: false }))].slice(0, 5);
     setDevices(nextDevices);
-    window.localStorage.setItem(DEVICES_KEY, JSON.stringify(nextDevices));
+    setStored(DEVICES_KEY, nextDevices);
+    const event = { id: createId("login"), at: new Date().toISOString(), browser: device.browser, platform: device.platform, location: device.location, status: suspicious ? "Review required" : "Successful", suspicious };
+    setLoginHistory((current) => {
+      const next = [event, ...current].slice(0, 20);
+      setStored(HISTORY_KEY, next);
+      return next;
+    });
+    if (suspicious) setSecurityAlert("A sign-in from a new device needs your review.");
     persistSession(nextSession);
     return nextSession;
   }, [devices, persistSession]);
@@ -112,21 +119,55 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(() => persistSession(null), [persistSession]);
 
+  useEffect(() => {
+    if (!session) return undefined;
+    let lastRefresh = 0;
+    const refresh = () => {
+      const now = Date.now();
+      if (now - lastRefresh < 60000) return;
+      lastRefresh = now;
+      persistSession({ ...session, expiresAt: now + SESSION_TIMEOUT, lastActivityAt: now });
+    };
+    const timeout = window.setInterval(() => {
+      if (Date.now() > session.expiresAt) {
+        setSecurityAlert("Your session expired after 30 minutes of inactivity.");
+        persistSession(null);
+      }
+    }, 15000);
+    ["click", "keydown", "touchstart"].forEach((event) => window.addEventListener(event, refresh, { passive: true }));
+    return () => {
+      window.clearInterval(timeout);
+      ["click", "keydown", "touchstart"].forEach((event) => window.removeEventListener(event, refresh));
+    };
+  }, [persistSession, session]);
+
   const revokeDevice = useCallback((id) => {
     const nextDevices = devices.filter((device) => device.id !== id);
     setDevices(nextDevices);
-    window.localStorage.setItem(DEVICES_KEY, JSON.stringify(nextDevices));
+    setStored(DEVICES_KEY, nextDevices);
   }, [devices]);
 
   const logoutOtherDevices = useCallback(() => {
     const nextDevices = devices.filter((device) => device.current);
     setDevices(nextDevices);
-    window.localStorage.setItem(DEVICES_KEY, JSON.stringify(nextDevices));
+    setStored(DEVICES_KEY, nextDevices);
   }, [devices]);
 
   const setTwoFactor = useCallback((enabled) => {
     if (!session) return;
     persistSession({ ...session, user: { ...session.user, twoFactorEnabled: enabled } });
+  }, [persistSession, session]);
+
+  const updateProfile = useCallback((updates) => {
+    if (!session) return false;
+    persistSession({ ...session, user: { ...session.user, ...updates, updatedAt: new Date().toISOString() } });
+    return true;
+  }, [persistSession, session]);
+
+  const changePassword = useCallback(({ currentPassword, newPassword }) => {
+    if (!session || !currentPassword || newPassword.length < 8) return false;
+    persistSession({ ...session, user: { ...session.user, passwordChangedAt: new Date().toISOString() } });
+    return true;
   }, [persistSession, session]);
 
   const deleteAccount = useCallback(() => {
@@ -138,9 +179,11 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(() => ({
     challenge,
+    changePassword,
     deleteAccount,
     devices,
     isAuthenticated: Boolean(session && session.expiresAt > Date.now()),
+    loginHistory,
     loginWithPassword,
     logout,
     logoutOtherDevices,
@@ -148,11 +191,14 @@ export function AuthProvider({ children }) {
     requestOtp,
     revokeDevice,
     session,
+    securityAlert,
+    clearSecurityAlert: () => setSecurityAlert(""),
     setTwoFactor,
     socialLogin,
+    updateProfile,
     user: session?.user || null,
     verifyChallenge,
-  }), [challenge, deleteAccount, devices, loginWithPassword, logout, logoutOtherDevices, register, requestOtp, revokeDevice, session, setTwoFactor, socialLogin, verifyChallenge]);
+  }), [challenge, changePassword, deleteAccount, devices, loginHistory, loginWithPassword, logout, logoutOtherDevices, register, requestOtp, revokeDevice, securityAlert, session, setTwoFactor, socialLogin, updateProfile, verifyChallenge]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

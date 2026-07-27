@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ArrowLeft, SlidersHorizontal } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import BenefitRow from "../components/common/BenefitRow";
@@ -8,11 +8,22 @@ import ProductDetail from "../components/product/ProductDetail";
 import ReviewsAndBundles from "../components/product/ReviewsAndBundles";
 import { catalog, getProductBySlug } from "../data/catalog";
 import { useShop } from "../context/ShopContext";
+import { getStored, setStored } from "../utils/storage";
 
 export default function ProductPage() {
   const { slug } = useParams();
   const { addToCart, addToCompare, toggleWishlist } = useShop();
   const product = getProductBySlug(slug);
+
+  useEffect(() => {
+    if (!product) return;
+    const history = getStored("marketsphere:recently-viewed", []);
+    const previous = history.find((item) => item.slug === product.slug);
+    const entry = { id: product.id, slug: product.slug, viewedAt: new Date().toISOString(), viewCount: (previous?.viewCount || 0) + 1 };
+    setStored("marketsphere:recently-viewed", [entry, ...history.filter((item) => item.slug !== product.slug)].slice(0, 24));
+    const sync = getStored("marketsphere:history-sync", null);
+    if (sync?.enabled) setStored("marketsphere:history-sync", { ...sync, lastSyncedAt: new Date().toISOString() });
+  }, [product]);
 
   if (!product) {
     return (

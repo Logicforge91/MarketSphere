@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from "react";
-import { Bell, Box, Check, ChevronDown, Heart, Minus, Play, Plus, RotateCw, Scale, Share2, ShieldCheck, Star, ZoomIn } from "lucide-react";
+import { Bell, Box, Check, ChevronDown, Heart, Minus, Play, Plus, RotateCw, Scale, ShieldCheck, Star, ZoomIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { productDetail } from "../../data/shopData";
 import { money } from "../../utils/format";
 import OfferList from "../commerce/OfferList";
 import PincodeDelivery from "../commerce/PincodeDelivery";
+import ShareDialog from "../common/ShareDialog";
 
 const variantOptions = {
   size: ["XS", "S", "M", "L", "XL"],
@@ -62,25 +63,18 @@ export default function ProductDetail({ product = productDetail, onAdd, onCompar
     if (buyNow) navigate("/cart");
   }
 
-  async function share() {
-    const data = { title: product.name, text: `Shop ${product.name} on MarketSphere`, url: window.location.href };
-    if (navigator.share) await navigator.share(data);
-    else await navigator.clipboard?.writeText(window.location.href);
-    setNotice("Product link ready to share");
-  }
-
   return (
     <section className="product-detail-shell">
       <div className="advanced-gallery">
         <div className="media-mode-switch">
-          <button className={mediaMode === "image" ? "active" : ""} onClick={() => setMediaMode("image")} title="Product photos"><Box size={16} /></button>
-          <button className={mediaMode === "video" ? "active" : ""} onClick={() => setMediaMode("video")} title="Product video"><Play size={16} /></button>
-          <button className={mediaMode === "360" ? "active" : ""} onClick={() => setMediaMode("360")} title="360 degree view"><RotateCw size={16} /></button>
+          <button className={mediaMode === "image" ? "active" : ""} aria-label="Show product photos" aria-pressed={mediaMode === "image"} onClick={() => setMediaMode("image")} title="Product photos"><Box size={16} /></button>
+          <button className={mediaMode === "video" ? "active" : ""} aria-label="Show captioned product video preview" aria-pressed={mediaMode === "video"} onClick={() => setMediaMode("video")} title="Product video"><Play size={16} /></button>
+          <button className={mediaMode === "360" ? "active" : ""} aria-label="Show 360 degree product view" aria-pressed={mediaMode === "360"} onClick={() => setMediaMode("360")} title="360 degree view"><RotateCw size={16} /></button>
         </div>
         <div className="product-thumbnails">{variantOptions.color.map((color) => <button className={selection.color === color ? "active" : ""} onClick={() => choose("color", color)} key={color}><img src={product.image} alt={`${color} view`} /></button>)}</div>
         <div className={`product-media-stage ${zoomed ? "zoomed" : ""} mode-${mediaMode}`}>
           <img src={variant.image} style={{ objectPosition: variant.position }} alt={`${product.name} in ${selection.color}`} />
-          {mediaMode === "video" && <div className="media-overlay"><Play size={38} /><strong>Product video</strong><span>See the fit and movement</span></div>}
+          {mediaMode === "video" && <div className="media-overlay" role="img" aria-label={`Captioned product video preview of ${product.name} in ${selection.color}`}><Play size={38} /><strong>Product video</strong><span aria-label="Video caption">Caption: See the fit and movement</span></div>}
           {mediaMode === "360" && <div className="media-overlay"><RotateCw size={38} /><strong>Drag for 360° view</strong><span>Interactive preview</span></div>}
           {mediaMode === "image" && <button className="zoom-control" onClick={() => setZoomed((value) => !value)}><ZoomIn size={17} /> {zoomed ? "Reset" : "Zoom"}</button>}
         </div>
@@ -103,7 +97,7 @@ export default function ProductDetail({ product = productDetail, onAdd, onCompar
 
         <div className={`stock-line ${variant.available ? "" : "unavailable"}`}><Check size={15} /><strong>{variant.available ? `${variant.stock} items in stock` : "Combination unavailable"}</strong></div>
         <div className="purchase-row"><div className="qty"><button disabled={quantity === 1} onClick={() => setQuantity((value) => value - 1)}><Minus size={14} /></button><span>{quantity}</span><button disabled={quantity >= variant.stock} onClick={() => setQuantity((value) => value + 1)}><Plus size={14} /></button></div><button className="primary" disabled={!variant.available} onClick={() => addToCart(false)}>Add to cart</button><button className="secondary" disabled={!variant.available} onClick={() => addToCart(true)}>Buy now</button></div>
-        <div className="product-secondary-actions"><button onClick={() => onWishlist?.(product)}><Heart size={16} /> Wishlist</button><button onClick={share}><Share2 size={16} /> Share</button><button onClick={() => { onCompare?.(product); navigate("/compare"); }}><Scale size={16} /> Compare</button><button onClick={() => setNotice("Price-drop alert enabled")}><Bell size={16} /> Price alert</button></div>
+        <div className="product-secondary-actions"><button onClick={() => onWishlist?.(product)}><Heart size={16} /> Wishlist</button><ShareDialog title={product.name} text={`Shop ${product.name} on MarketSphere`} path={`/product/${product.slug}`} type="product">Share</ShareDialog><button onClick={() => { onCompare?.(product); navigate("/compare"); }}><Scale size={16} /> Compare</button><button onClick={() => setNotice("Price-drop alert enabled")}><Bell size={16} /> Price alert</button></div>
         {notice && <p className="product-notice" role="status">{notice}</p>}
 
         <PincodeDelivery />

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AlertTriangle, ArrowLeft, Check, Laptop, LockKeyhole, MailCheck, MonitorSmartphone, ShieldCheck, Smartphone, Trash2 } from "lucide-react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import CaptchaCheck from "../components/common/CaptchaCheck";
 
 function AuthShell({ eyebrow, title, description, children, back = "/login" }) {
   return (
@@ -19,10 +20,12 @@ function AuthShell({ eyebrow, title, description, children, back = "/login" }) {
 
 export function RegisterPage() {
   const [form, setForm] = useState({ name: "", email: "", mobile: "", password: "", consent: false });
+  const [captchaValid, setCaptchaValid] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
   function submit(event) {
     event.preventDefault();
+    if (!captchaValid) return;
     register(form);
     navigate("/verify-email");
   }
@@ -32,7 +35,8 @@ export function RegisterPage() {
       <div className="auth-field-row"><label>Email address<input type="email" autoComplete="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label><label>Mobile number<input type="tel" autoComplete="tel" required value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} /></label></div>
       <label>Password<input type="password" autoComplete="new-password" minLength="8" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} /><small>Use at least 8 characters.</small></label>
       <label className="auth-check"><input type="checkbox" required checked={form.consent} onChange={(e) => setForm({ ...form, consent: e.target.checked })} /><span>I agree to the <Link to="/terms">Terms</Link> and <Link to="/privacy">Privacy Policy</Link>.</span></label>
-      <button className="primary" type="submit">Create account</button>
+      <CaptchaCheck onChange={setCaptchaValid} />
+      <button className="primary" disabled={!captchaValid} type="submit">Create account</button>
     </form>
     <p className="auth-switch">Already registered? <Link to="/login">Sign in</Link></p>
   </AuthShell>;

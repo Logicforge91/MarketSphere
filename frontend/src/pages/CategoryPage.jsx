@@ -5,6 +5,7 @@ import ProductCard from "../components/product/ProductCard";
 import { catalog } from "../data/catalog";
 import { getCategoryContent } from "../data/categoryData";
 import { useShop } from "../context/ShopContext";
+import ShareDialog from "../components/common/ShareDialog";
 
 export default function CategoryPage() {
   const { slug } = useParams();
@@ -31,7 +32,7 @@ export default function CategoryPage() {
 
       <section className="category-hero" style={{ backgroundColor: content.accent }}>
         <img src={content.image} alt={`${content.name} collection`} />
-        <div><span>{content.eyebrow}</span><h1>{content.title}</h1><p>{content.description}</p><Link to={`/products?category=${content.name}`}>Shop all {content.name.toLowerCase()} <ArrowRight size={15} /></Link></div>
+        <div><span>{content.eyebrow}</span><h1>{content.title}</h1><p>{content.description}</p><div className="category-hero-actions"><Link to={`/products?category=${content.name}`}>Shop all {content.name.toLowerCase()} <ArrowRight size={15} /></Link><ShareDialog title={`${content.name} at MarketSphere`} text={`Explore the latest ${content.name.toLowerCase()} collection`} path={`/category/${slug}`} type="category">Share</ShareDialog></div></div>
       </section>
 
       <nav className="category-tree" aria-label={`${content.name} category navigation`}>

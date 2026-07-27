@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import HomeFooter from "../components/home/HomeFooter";
 import {
   BenefitStrip,
   BrandStrip,
@@ -7,7 +6,6 @@ import {
   DealOfTheDay,
   FeaturedStores,
   FlashSale,
-  Newsletter,
   PersonalizedEdit,
   PersonalizedOffers,
   ProductShelf,
@@ -47,8 +45,6 @@ export default function HomePage() {
       <ShopTheLook products={deals.slice(1, 3)} onAdd={addToCart} onWishlist={toggleWishlist} />
       <Testimonials />
       <SocialGallery />
-      <Newsletter />
-      <HomeFooter />
     </main>
   );
 }

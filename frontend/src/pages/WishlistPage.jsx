@@ -4,17 +4,11 @@ import { Link } from "react-router-dom";
 import { useShop } from "../context/ShopContext";
 import { money } from "../utils/format";
 import { slugify } from "../data/catalog";
+import ShareDialog from "../components/common/ShareDialog";
+import { getStored } from "../utils/storage";
 
 const COLLECTIONS_KEY = "marketsphere:wishlist-collections";
 const ALERTS_KEY = "marketsphere:wishlist-alerts";
-
-function readStorage(key, fallback) {
-  try {
-    return JSON.parse(window.localStorage.getItem(key)) || fallback;
-  } catch {
-    return fallback;
-  }
-}
 
 const initialCollections = [
   { id: "favorites", name: "My favourites", privacy: "private", products: [] },
@@ -23,8 +17,8 @@ const initialCollections = [
 
 export default function WishlistPage() {
   const { addToCart, toggleWishlist, wishlist } = useShop();
-  const [collections, setCollections] = useState(() => readStorage(COLLECTIONS_KEY, initialCollections));
-  const [alerts, setAlerts] = useState(() => readStorage(ALERTS_KEY, {}));
+  const [collections, setCollections] = useState(() => getStored(COLLECTIONS_KEY, initialCollections));
+  const [alerts, setAlerts] = useState(() => getStored(ALERTS_KEY, {}));
   const [activeCollection, setActiveCollection] = useState("all");
   const [newCollection, setNewCollection] = useState("");
   const [creating, setCreating] = useState(false);
@@ -91,22 +85,13 @@ export default function WishlistPage() {
     setNotice(`${type === "price" ? "Price-drop" : "Back-in-stock"} alert ${next[productName][type] ? "enabled" : "disabled"}`);
   }
 
-  async function shareWishlist() {
-    const current = collections.find((item) => item.id === activeCollection);
-    const title = current?.name || "My MarketSphere wishlist";
-    const text = `${title}: ${visibleProducts.map((item) => item.name).join(", ")}`;
-    if (navigator.share) await navigator.share({ title, text, url: window.location.href });
-    else await navigator.clipboard?.writeText(`${text} ${window.location.href}`);
-    setNotice("Wishlist link ready to share");
-  }
-
   const currentCollection = collections.find((item) => item.id === activeCollection);
 
   return (
     <main className="real-page wishlist-page">
       <header className="wishlist-heading">
         <div><span>Saved products</span><h1>My wishlist</h1><p>Organise favourites, watch prices and move products to your bag when the moment is right.</p></div>
-        <div><button className="secondary" onClick={() => setCreating((value) => !value)}><FolderPlus size={15} /> New collection</button><button className="secondary" onClick={shareWishlist}><Share2 size={15} /> Share</button></div>
+        <div><button className="secondary" onClick={() => setCreating((value) => !value)}><FolderPlus size={15} /> New collection</button><ShareDialog className="secondary" title={collections.find((item) => item.id === activeCollection)?.name || "My MarketSphere wishlist"} text={`See my saved picks: ${visibleProducts.map((item) => item.name).join(", ")}`} path={`/wishlist${activeCollection !== "all" ? `?collection=${activeCollection}` : ""}`} type="wishlist">Share</ShareDialog></div>
       </header>
 
       {creating && <form className="new-collection-form" onSubmit={createCollection}><input autoFocus value={newCollection} onChange={(event) => setNewCollection(event.target.value)} placeholder="Collection name" maxLength="40" /><button className="primary">Create collection</button></form>}

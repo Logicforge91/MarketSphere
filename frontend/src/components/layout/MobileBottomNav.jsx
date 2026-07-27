@@ -1,19 +1,19 @@
 import React from "react";
-import { Heart, Home, Search, ShoppingBag, UserRound } from "lucide-react";
+import { Grid2X2, Heart, Home, Search, UserRound } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useShop } from "../../context/ShopContext";
 
 const items = [
   { label: "Home", to: "/", icon: Home },
-  { label: "Discover", to: "/search", icon: Search },
-  { label: "Saved", to: "/wishlist", icon: Heart, countKey: "wishlist" },
-  { label: "Bag", to: "/cart", icon: ShoppingBag, countKey: "cart" },
+  { label: "Categories", to: "/products", icon: Grid2X2 },
+  { label: "Search", to: "/search", icon: Search },
+  { label: "Wishlist", to: "/wishlist", icon: Heart, countKey: "wishlist" },
   { label: "Account", to: "/account", icon: UserRound },
 ];
 
 export default function MobileBottomNav() {
-  const { cart, wishlist } = useShop();
-  const counts = { cart: cart.length, wishlist: wishlist.length };
+  const { wishlist } = useShop();
+  const counts = { wishlist: wishlist.length };
 
   return (
     <nav className="mobile-bottom-nav" aria-label="Mobile navigation">

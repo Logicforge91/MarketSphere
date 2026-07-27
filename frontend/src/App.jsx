@@ -12,6 +12,31 @@ const ProductPage = lazyPage(() => import("./pages/ProductPage.jsx"));
 const CartPage = lazyPage(() => import("./pages/CartPage.jsx"));
 const CheckoutPage = lazyPage(() => import("./pages/CheckoutPage.jsx"));
 const OrdersPage = lazyPage(() => import("./pages/OrdersPage.jsx"));
+const TrackOrderPage = lazyPage(() => import("./pages/OrderTrackingPage.jsx"));
+const ReturnsPage = lazyPage(() => import("./pages/ReturnsPage.jsx"));
+const NotificationsPage = lazyPage(() => import("./pages/NotificationsPage.jsx"));
+const SupportPage = lazyPage(() => import("./pages/SupportPage.jsx"));
+const ChatPage = lazyPage(() => import("./pages/ChatPage.jsx"));
+const RewardsPage = lazyPage(() => import("./pages/RewardsPage.jsx"));
+const ReferralsPage = lazyPage(() => import("./pages/ReferralsPage.jsx"));
+const WalletPage = lazyPage(() => import("./pages/WalletPage.jsx"));
+const GiftCardsPage = lazyPage(() => import("./pages/GiftCardsPage.jsx"));
+const MembershipPage = lazyPage(() => import("./pages/MembershipPage.jsx"));
+const RecentlyViewedPage = lazyPage(() => import("./pages/RecentlyViewedPage.jsx"));
+const RecommendationsPage = lazyPage(() => import("./pages/RecommendationsPage.jsx"));
+const LocalizationPage = lazyPage(() => import("./pages/LocalizationPage.jsx"));
+const SecurityPrivacyPage = lazyPage(() => import("./pages/SecurityPrivacyPage.jsx"));
+const informationalPages = () => import("./pages/InformationalPages.jsx");
+const CancellationPolicyPage = lazyPage(informationalPages, "CancellationPolicyPage");
+const SellerRegistrationPage = lazyPage(informationalPages, "SellerRegistrationPage");
+const StoreLocatorPage = lazyPage(informationalPages, "StoreLocatorPage");
+const contentPages = () => import("./pages/ContentPages.jsx");
+const ContentHubPage = lazyPage(contentPages, "ContentHubPage");
+const GuidesPage = lazyPage(contentPages, "GuidesPage");
+const VideoContentPage = lazyPage(contentPages, "VideoContentPage");
+const BrandStoriesPage = lazyPage(contentPages, "BrandStoriesPage");
+const OfferPages = lazyPage(contentPages, "OfferPages");
+const CampaignLandingPage = lazyPage(contentPages, "CampaignLandingPage");
 const WishlistPage = lazyPage(() => import("./pages/WishlistPage.jsx"));
 const AuthPage = lazyPage(() => import("./pages/AuthPage.jsx"));
 const AccountPage = lazyPage(() => import("./pages/AccountPage.jsx"));
@@ -28,20 +53,11 @@ const TwoFactorPage = lazyPage(authenticationPages, "TwoFactorPage");
 const SessionManagementPage = lazyPage(authenticationPages, "SessionManagementPage");
 const DeleteAccountPage = lazyPage(authenticationPages, "DeleteAccountPage");
 
-const utilityPages = () => import("./pages/UtilityPages.jsx");
-const NotificationsPage = lazyPage(utilityPages, "NotificationsPage");
-const WalletPage = lazyPage(utilityPages, "WalletPage");
-const RewardsPage = lazyPage(utilityPages, "RewardsPage");
-const ReferralsPage = lazyPage(utilityPages, "ReferralsPage");
-const SupportPage = lazyPage(utilityPages, "SupportPage");
-const ReturnsPage = lazyPage(utilityPages, "ReturnsPage");
-const ComparePage = lazyPage(utilityPages, "ComparePage");
-const RecentlyViewedPage = lazyPage(utilityPages, "RecentlyViewedPage");
+const ComparePage = lazyPage(() => import("./pages/ComparePage.jsx"));
 
 const customerPages = () => import("./pages/CustomerPages.jsx");
 const AddressBookPage = lazyPage(customerPages, "AddressBookPage");
 const PaymentMethodsPage = lazyPage(customerPages, "PaymentMethodsPage");
-const TrackOrderPage = lazyPage(customerPages, "TrackOrderPage");
 const OrderSuccessPage = lazyPage(customerPages, "OrderSuccessPage");
 const FaqPage = lazyPage(customerPages, "FaqPage");
 const ContactPage = lazyPage(customerPages, "ContactPage");
@@ -51,6 +67,8 @@ const AboutPage = lazyPage(customerPages, "AboutPage");
 const ShippingPage = lazyPage(customerPages, "ShippingPage");
 const PrivacyPage = lazyPage(customerPages, "PrivacyPage");
 const TermsPage = lazyPage(customerPages, "TermsPage");
+const RefundPolicyPage = lazyPage(customerPages, "RefundPolicyPage");
+const ReturnPolicyPage = lazyPage(customerPages, "ReturnPolicyPage");
 const CareersPage = lazyPage(customerPages, "CareersPage");
 const NotFoundPage = lazyPage(customerPages, "NotFoundPage");
 
@@ -88,12 +106,24 @@ export default function App() {
           <Route path="/sellers/compare" element={<SellerComparisonPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/wallet" element={<WalletPage />} />
+          <Route path="/gift-cards" element={<GiftCardsPage />} />
+          <Route path="/membership" element={<MembershipPage />} />
           <Route path="/rewards" element={<RewardsPage />} />
           <Route path="/referrals" element={<ReferralsPage />} />
           <Route path="/support" element={<SupportPage />} />
+          <Route path="/chat" element={<ChatPage />} />
           <Route path="/returns" element={<ReturnsPage />} />
           <Route path="/compare" element={<ComparePage />} />
           <Route path="/recently-viewed" element={<RecentlyViewedPage />} />
+          <Route path="/recommendations" element={<RecommendationsPage />} />
+          <Route path="/localization" element={<LocalizationPage />} />
+          <Route path="/security-privacy" element={<SecurityPrivacyPage />} />
+          <Route path="/content" element={<ContentHubPage />} />
+          <Route path="/guides/:type" element={<GuidesPage />} />
+          <Route path="/videos" element={<VideoContentPage />} />
+          <Route path="/brand-stories" element={<BrandStoriesPage />} />
+          <Route path="/offers" element={<OfferPages />} />
+          <Route path="/collections/:slug" element={<CampaignLandingPage />} />
           <Route path="/addresses" element={<AddressBookPage />} />
           <Route path="/payment-methods" element={<PaymentMethodsPage />} />
           <Route path="/track-order" element={<TrackOrderPage />} />
@@ -106,6 +136,11 @@ export default function App() {
           <Route path="/shipping" element={<ShippingPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
+          <Route path="/refund-policy" element={<RefundPolicyPage />} />
+          <Route path="/return-policy" element={<ReturnPolicyPage />} />
+          <Route path="/cancellation-policy" element={<CancellationPolicyPage />} />
+          <Route path="/sell-with-us" element={<SellerRegistrationPage />} />
+          <Route path="/stores" element={<StoreLocatorPage />} />
           <Route path="/careers" element={<CareersPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>

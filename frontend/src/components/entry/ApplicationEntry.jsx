@@ -15,6 +15,8 @@ import {
   Wrench,
 } from "lucide-react";
 import { appConfig, checkApplicationStatus } from "../../config/appConfig";
+import { useLocalization } from "../../context/LocalizationContext";
+import { getStored } from "../../utils/storage";
 
 const ENTRY_KEY = "marketsphere:entry-preferences";
 
@@ -34,14 +36,11 @@ const regions = [
 ];
 
 function readPreferences() {
-  try {
-    return JSON.parse(window.localStorage.getItem(ENTRY_KEY)) || null;
-  } catch {
-    return null;
-  }
+  return getStored(ENTRY_KEY, null);
 }
 
 export default function ApplicationEntry({ children }) {
+  const { updatePreferences } = useLocalization();
   const [stage, setStage] = useState("splash");
   const [step, setStep] = useState(0);
   const [preferences, setPreferences] = useState(() => readPreferences() || {
@@ -119,6 +118,7 @@ export default function ApplicationEntry({ children }) {
       version: appConfig.currentVersion,
     };
     window.localStorage.setItem(ENTRY_KEY, JSON.stringify(completed));
+    updatePreferences(completed);
     document.documentElement.lang = completed.language;
     setPreferences(completed);
     setStage("ready");

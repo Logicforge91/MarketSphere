@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Grid2X2, List, SlidersHorizontal, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Globe2, Grid2X2, List, SlidersHorizontal, Sparkles } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "../components/product/ProductCard";
 import { catalog } from "../data/catalog";
 import { brands } from "../data/shopData";
 import { useShop } from "../context/ShopContext";
+import { useLocalization } from "../context/LocalizationContext";
 
 const PAGE_SIZE = 8;
 const sellers = ["MarketSphere Select", "The Modern Wardrobe", "Sole Society", "The Beauty Room"];
@@ -40,6 +41,7 @@ function enrichProduct(product, index) {
     gender: product.category === "Men" ? "Men" : product.category === "Women" ? "Women" : "Unisex",
     material: materials[index % materials.length],
     popularity: 9200 - index * 317,
+    regionalRank: (index * 37) % 100,
     sizes: sizes.slice(index % 2, 4 + (index % 2)),
     soldCount: 4100 - index * 113,
     style: styles[index % styles.length],
@@ -52,11 +54,13 @@ const discoveryCatalog = catalog.map(enrichProduct);
 
 export default function ListingPage() {
   const { addToCart, toggleWishlist } = useShop();
+  const { region } = useLocalization();
   const [params, setParams] = useSearchParams();
   const [view, setView] = useState("grid");
   const [loadMode, setLoadMode] = useState("pages");
   const [page, setPage] = useState(1);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [loading, setLoading] = useState(false);
   const [priceRange, setPriceRange] = useState([0, 80000]);
   const [sortBy, setSortBy] = useState("relevance");
   const [facets, setFacets] = useState({
@@ -111,6 +115,7 @@ export default function ListingPage() {
 
   const products = useMemo(() => {
     const filtered = discoveryCatalog.filter((product) => {
+      if (product.regionalRank >= region.availability) return false;
       if (category !== "All" && product.category !== category) return false;
       if (subcategory !== "All" && product.subcategory !== subcategory) return false;
       if (brand !== "All" && product.brand !== brand) return false;
@@ -143,12 +148,22 @@ export default function ListingPage() {
       if (sortBy === "best-selling") return b.soldCount - a.soldCount;
       return Number(b.isBestSeller) - Number(a.isBestSeller) || b.rating - a.rating;
     });
-  }, [brand, category, collection, facets, mode, priceRange, seller, sortBy, subcategory]);
+  }, [brand, category, collection, facets, mode, priceRange, region.availability, seller, sortBy, subcategory]);
 
   useEffect(() => {
     setPage(1);
     setVisibleCount(PAGE_SIZE);
+    setLoading(true);
+    const timer = window.setTimeout(() => setLoading(false), 180);
+    return () => window.clearTimeout(timer);
   }, [brand, category, collection, facets, loadMode, mode, priceRange, seller, sortBy, subcategory]);
+
+  useEffect(() => {
+    if (page === 1) return undefined;
+    setLoading(true);
+    const timer = window.setTimeout(() => setLoading(false), 180);
+    return () => window.clearTimeout(timer);
+  }, [page]);
 
   useEffect(() => {
     if (loadMode !== "infinite" || !loadMarker.current) return undefined;
@@ -168,6 +183,7 @@ export default function ListingPage() {
       <nav className="discovery-modes" aria-label="Product collections">
         {[["all", "All products"], ["new", "New arrivals"], ["best", "Best sellers"], ["deals", "Deals"], ["recommended", "Recommended"]].map(([value, label]) => <button className={mode === value ? "active" : ""} onClick={() => setFilter("mode", value)} key={value}>{label}</button>)}
       </nav>
+      <p className="regional-catalog-note"><Globe2 size={13} /> Showing products available in {region.country} · Prices include regional currency conversion</p>
 
       <div className="discovery-layout">
         <aside className="discovery-filters">
@@ -200,7 +216,7 @@ export default function ListingPage() {
 
           <div className="active-filters">{[category, subcategory, brand, seller, collection, ...facets.availability, ...facets.sizes, ...facets.colors, ...facets.materials, ...facets.genders, ...facets.styles].filter((value) => value !== "All").map((value) => <span key={value}>{value}</span>)}</div>
 
-          {visibleProducts.length ? <div className={`real-grid discovery-products ${view === "list" ? "list-view" : ""}`}>{visibleProducts.map((product) => <ProductCard product={product} onAdd={addToCart} onWishlist={toggleWishlist} key={product.id} />)}</div> : <div className="discovery-empty"><Sparkles /><h2>No products match these filters</h2><p>Reset the filters to explore the full collection.</p><button className="secondary" onClick={resetFilters}>Reset filters</button></div>}
+          {loading ? <div className={`real-grid discovery-products product-skeleton-grid ${view === "list" ? "list-view" : ""}`} role="status" aria-label="Loading products">{Array.from({ length: PAGE_SIZE }, (_, index) => <article className="product-skeleton" aria-hidden="true" key={index}><i /><span /><span /><b /></article>)}</div> : visibleProducts.length ? <div className={`real-grid discovery-products ${view === "list" ? "list-view" : ""}`}>{visibleProducts.map((product) => <ProductCard product={product} onAdd={addToCart} onWishlist={toggleWishlist} key={product.id} />)}</div> : <div className="discovery-empty"><Sparkles /><h2>No products match these filters</h2><p>Reset the filters to explore the full collection.</p><button className="secondary" onClick={resetFilters}>Reset filters</button></div>}
 
           {products.length > PAGE_SIZE && <footer className="listing-navigation">
             <div className="load-mode"><button className={loadMode === "pages" ? "active" : ""} onClick={() => setLoadMode("pages")}>Pages</button><button className={loadMode === "infinite" ? "active" : ""} onClick={() => setLoadMode("infinite")}>Continuous</button></div>

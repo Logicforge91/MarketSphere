@@ -5,17 +5,14 @@ import ProductCard from "../components/product/ProductCard";
 import { catalog } from "../data/catalog";
 import { brands } from "../data/shopData";
 import { useShop } from "../context/ShopContext";
+import { getStored } from "../utils/storage";
 
 const HISTORY_KEY = "marketsphere:search-history";
 const popularSearches = ["Summer dresses", "White sneakers", "Shoulder bags", "Smart watches", "Linen edit", "Beauty essentials"];
 const stores = ["The Modern Wardrobe", "Sole Society", "The Beauty Room", "MarketSphere Select"];
 
 function readHistory() {
-  try {
-    return JSON.parse(window.localStorage.getItem(HISTORY_KEY)) || [];
-  } catch {
-    return [];
-  }
+  return getStored(HISTORY_KEY, []);
 }
 
 function productBrand(product, index) {
