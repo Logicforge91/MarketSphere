@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Clock3, Instagram, Mail, Quote, Store, Tag } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock3, Instagram, Quote, Store, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
 import ProductCard from "../product/ProductCard";
 import { heroSlides, lookbookContent, saleContent, socialGallery, storefrontBenefits, trendStories } from "../../data/marketSphereContent";
@@ -213,26 +213,6 @@ export function SocialGallery() {
       <div className="velora-instagram">
         {socialGallery.map(({ src, alt }) => <Link to="/products" key={src}><img src={src} alt={alt} loading="lazy" /><Instagram size={22} aria-hidden="true" /></Link>)}
       </div>
-    </section>
-  );
-}
-
-export function Newsletter() {
-  const [status, setStatus] = useState("idle");
-
-  function subscribe(event) {
-    event.preventDefault();
-    setStatus("subscribed");
-  }
-
-  return (
-    <section className="velora-newsletter" aria-labelledby="newsletter-title">
-      <div><Mail size={22} aria-hidden="true" /><div><strong id="newsletter-title">Newsletter</strong><span>{status === "subscribed" ? "You are on the list. Welcome to MarketSphere." : "Get 10% off your first order"}</span></div></div>
-      <form onSubmit={subscribe}>
-        <label className="sr-only" htmlFor="newsletter-email">Email address</label>
-        <input id="newsletter-email" type="email" autoComplete="email" required placeholder="Enter your email" />
-        <button aria-label="Subscribe"><ArrowRight size={17} /></button>
-      </form>
     </section>
   );
 }

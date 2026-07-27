@@ -80,13 +80,13 @@ export default function Header() {
   }
 
   return <header className="topbar velora-header">
-    <div className="velora-announcement"><span>{t("shipping")} · {region.country}</span><span>{t("returns")}</span></div>
+    <div className="velora-announcement"><span>Complimentary delivery over ₹1,999</span><Link to="/products?mode=new">The new season edit is live <strong>Shop now</strong></Link><Link to="/membership">Premium members shop first</Link></div>
     <div className="nav">
       <button className="mobile-menu-trigger" type="button" aria-label="Open navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}><Menu /></button>
-      <Link to="/" className="velora-logo" aria-label="MarketSphere home">MARKETSPHERE<small>Elevate everyday</small></Link>
-      {location.pathname !== "/search" ? <form className="desktop-header-search" role="search" onSubmit={submitSearch}><Search aria-hidden="true" /><label className="sr-only" htmlFor="desktop-product-search">Search MarketSphere</label><input id="desktop-product-search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search products, brands and more..." /><button type="submit">Search</button></form> : <div className="header-search-spacer" aria-hidden="true" />}
+      <Link to="/" className="velora-logo" aria-label="MarketSphere home"><b>MS</b><span>MARKETSPHERE<small>Elevate everyday</small></span></Link>
+      {location.pathname !== "/search" ? <form className="desktop-header-search" role="search" onSubmit={submitSearch}><button type="submit" aria-label="Search"><Search /></button><label className="sr-only" htmlFor="desktop-product-search">Search MarketSphere</label><input id="desktop-product-search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="What are you looking for?" /></form> : <div className="header-search-spacer" aria-hidden="true" />}
       <div className="actions">
-        <Link to="/localization" className="header-location" aria-label={`Shopping location ${region.country}`}><MapPin /><span>{region.country}</span></Link>
+        <Link to="/localization" className="header-location" aria-label={`Shopping location ${region.country}`}><MapPin /><span><small>Deliver to</small>{region.country}</span></Link>
         <Link to="/wishlist" className="header-action" aria-label={`${t("wishlist")} with ${wishlist.length} items`}><Heart /><span>{t("wishlist")}</span></Link>
         <div className="header-account" ref={accountRef}>
           <button className="header-action" type="button" aria-haspopup="menu" aria-expanded={accountOpen} onClick={() => setAccountOpen((value) => !value)}><UserRound /><span>{t("account")}</span><ChevronDown /></button>
@@ -96,13 +96,13 @@ export default function Header() {
       </div>
     </div>
     <nav className="tabs" aria-label="Primary navigation">
-      <details className="category-menu"><summary>Categories <ChevronDown /></summary><div>{categoryGroups.map(([group, children]) => <section key={group}><Link to={`/category/${group.toLowerCase()}`}>{group}</Link>{children.map((child) => <Link to={`/products?category=${group}&subcategory=${encodeURIComponent(child)}`} key={child}>{child}</Link>)}</section>)}</div></details>
+      <details className="category-menu"><summary><Menu /> Shop departments <ChevronDown /></summary><div><header><span>Explore MarketSphere</span><strong>Shop by department</strong></header>{categoryGroups.map(([group, children]) => <section key={group}><Link to={`/category/${group.toLowerCase()}`}>{group}<span>View all</span></Link>{children.map((child) => <Link to={`/products?category=${group}&subcategory=${encodeURIComponent(child)}`} key={child}>{child}</Link>)}</section>)}</div></details>
       {navigation.map((item) => <Link className={navClass(item)} to={item.to} key={item.label}>{item.label}</Link>)}
     </nav>
 
     <div className={`mobile-nav-backdrop ${menuOpen ? "open" : ""}`} aria-hidden="true" onClick={() => setMenuOpen(false)} />
     <aside className={`mobile-nav-panel ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen} {...(!menuOpen ? { inert: "" } : {})}>
-      <div className="mobile-nav-heading"><Link to="/" className="velora-logo">MARKETSPHERE</Link><button type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)}><X /></button></div>
+      <div className="mobile-nav-heading"><Link to="/" className="velora-logo"><b>MS</b><span>MARKETSPHERE</span></Link><button type="button" aria-label="Close navigation" onClick={() => setMenuOpen(false)}><X /></button></div>
       <Link className="mobile-location-link" to="/localization"><MapPin /> {region.country}<span>Change</span></Link>
       <nav aria-label="Mobile categories">{navigation.map((item) => <Link className={navClass(item)} to={item.to} key={item.label}>{item.label}<span>›</span></Link>)}</nav>
       <div className="mobile-account-menu"><strong>My account</strong>{accountItems.map(([label, to, Icon]) => <Link to={to} key={label}><Icon />{label}</Link>)}{isAuthenticated && <button onClick={signOut}><LogOut /> Logout</button>}</div>

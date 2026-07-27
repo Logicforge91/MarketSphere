@@ -1137,21 +1137,6 @@ input:disabled {
   display: none;
 }
 
-.velora-footer .footer-legal {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: flex-end;
-  gap: 18px;
-  padding-top: 16px;
-  color: #8a8d9a;
-  border-top: 1px solid var(--velora-line);
-  font-size: 8px;
-}
-
-.velora-footer .footer-legal span {
-  margin-right: auto;
-}
-
 .shop-toast {
   position: fixed;
   right: 22px;
@@ -10681,4 +10666,626 @@ html[dir="rtl"] .policy-layout aside {
   .mobile-account-menu svg { width: 13px; }
   .mobile-account-menu button { grid-column: 1 / -1; color: #b42318; }
   .mobile-nav-panel { overflow-y: auto; }
+}
+/* Canonical application spacing */
+:root {
+  --space-page-inline: 24px;
+  --space-page-top: 28px;
+  --space-page-bottom: 64px;
+  --space-section: 36px;
+  --space-section-compact: 20px;
+}
+
+.route-content {
+  min-width: 0;
+}
+
+.route-content > :where(main.real-page, main.real-product-page) {
+  width: min(calc(100% - (var(--space-page-inline) * 2)), 1240px);
+  max-width: 1240px;
+  margin: var(--space-page-top) auto var(--space-page-bottom);
+  padding-inline: 0;
+}
+
+.velora-home {
+  width: min(calc(100% - (var(--space-page-inline) * 2)), 1240px);
+  margin-inline: auto;
+}
+
+.velora-home > :where(.velora-section, .velora-promo, .personalized-edit, .velora-lookbook) {
+  margin-block: var(--space-section);
+}
+
+.real-page > :where(section, .page-heading, .info-page-heading) + :where(section, .policy-layout, .security-privacy-grid, .store-locator-layout) {
+  margin-top: var(--space-section-compact);
+}
+
+.site-footer {
+  margin-top: 0;
+}
+
+@media (max-width: 700px) {
+  :root {
+    --space-page-inline: 12px;
+    --space-page-top: 16px;
+    --space-page-bottom: 44px;
+    --space-section: 24px;
+    --space-section-compact: 14px;
+  }
+}
+/* MarketSphere header refinement */
+.velora-header {
+  position: sticky;
+  z-index: 100;
+  top: 0;
+  width: 100%;
+  background: rgba(255,255,255,.98);
+  border-bottom: 1px solid #e5e6eb;
+  box-shadow: 0 4px 18px rgba(20,20,28,.04);
+  backdrop-filter: blur(12px);
+}
+
+.velora-header .velora-announcement {
+  min-height: 28px;
+  gap: 0;
+  justify-content: center;
+  color: #d8d8df;
+  background: #17171e;
+  font-size: 8px;
+  letter-spacing: 0;
+}
+
+.velora-header .velora-announcement > * {
+  display: flex;
+  min-height: 28px;
+  align-items: center;
+  padding-inline: 24px;
+  border-right: 1px solid #393941;
+}
+
+.velora-header .velora-announcement > *:last-child {
+  color: #a9e4ca;
+  border-right: 0;
+  font-weight: 800;
+}
+
+.velora-header .nav {
+  width: min(calc(100% - 48px), 1240px);
+  min-height: 72px;
+  margin-inline: auto;
+  padding: 0;
+  gap: 24px;
+}
+
+.velora-header .velora-logo {
+  flex: 0 0 auto;
+  color: #101018;
+  font-size: 21px;
+  font-weight: 950;
+  letter-spacing: 0;
+}
+
+.velora-header .velora-logo small {
+  color: #585b66;
+  font-size: 6px;
+  letter-spacing: 0;
+}
+
+.velora-header .desktop-header-search {
+  min-height: 44px;
+  max-width: 560px;
+  border-color: #d7dae2;
+  border-radius: 4px;
+  background: #f8f8fa;
+  transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+}
+
+.velora-header .desktop-header-search:focus-within {
+  background: #fff;
+  border-color: #6650c7;
+  box-shadow: 0 0 0 3px rgba(86,55,196,.1);
+}
+
+.velora-header .desktop-header-search input {
+  height: 42px;
+  color: #191923;
+  background: transparent;
+}
+
+.velora-header .desktop-header-search input::placeholder {
+  color: #858994;
+}
+
+.velora-header .desktop-header-search button {
+  min-width: 68px;
+  background: #292332;
+  border-radius: 0 3px 3px 0;
+}
+
+.velora-header .actions {
+  gap: 4px;
+}
+
+.velora-header .actions > a,
+.velora-header .header-account > button {
+  min-width: 48px;
+  min-height: 46px;
+  padding: 5px 8px;
+  justify-content: center;
+  color: #252530;
+  border-radius: 4px;
+  transition: color .15s ease, background .15s ease;
+}
+
+.velora-header .actions > a:hover,
+.velora-header .header-account > button:hover,
+.velora-header .header-account > button[aria-expanded="true"] {
+  color: #4b28d1;
+  background: #f2efff;
+}
+
+.velora-header .actions svg {
+  width: 19px;
+  height: 19px;
+  stroke-width: 1.8;
+}
+
+.velora-header .header-action {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.velora-header .header-action > span {
+  color: inherit;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.velora-header .header-account > button > svg:last-child {
+  position: absolute;
+  right: 3px;
+  bottom: 7px;
+  width: 9px;
+}
+
+.velora-header .header-account > button {
+  position: relative;
+}
+
+.velora-header .header-location {
+  grid-template-columns: 18px 1fr;
+  justify-items: start;
+  min-width: 82px;
+  gap: 7px;
+}
+
+.velora-header .header-location > span {
+  display: grid;
+  gap: 1px;
+  text-align: left;
+}
+
+.velora-header .header-location small {
+  color: #7b7f8b;
+  font-size: 7px;
+  font-weight: 600;
+}
+
+.velora-header .cart-dot::after {
+  top: 3px;
+  right: 3px;
+  min-width: 16px;
+  height: 16px;
+  padding-inline: 4px;
+  border: 2px solid #fff;
+  font-size: 7px;
+}
+
+.velora-header .tabs {
+  width: 100%;
+  min-height: 44px;
+  gap: 0;
+  justify-content: center;
+  padding: 0 max(24px, calc((100% - 1240px) / 2));
+  background: #fff;
+  border-top: 1px solid #ececf0;
+  overflow: visible;
+}
+
+.velora-header .tabs > a {
+  min-height: 44px;
+  padding-inline: 20px;
+  color: #3c3d47;
+  border-bottom: 2px solid transparent;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.velora-header .tabs > a:hover,
+.velora-header .tabs > a.active {
+  color: #4b28d1;
+  background: #faf9ff;
+  border-bottom-color: #4b28d1;
+}
+
+.velora-header .tabs > .sale-link {
+  color: #d63a50;
+}
+
+.velora-header .category-menu summary {
+  min-height: 44px;
+  padding-inline: 20px;
+  color: #17171e;
+  background: #f6f4ff;
+  border-right: 1px solid #e1ddef;
+  border-left: 1px solid #e1ddef;
+}
+
+.velora-header .category-menu > div {
+  left: 0;
+  grid-template-columns: repeat(4, minmax(150px,1fr));
+  width: min(700px, calc(100vw - 48px));
+  padding: 24px 18px;
+  border-top: 3px solid #4b28d1;
+  box-shadow: 0 22px 55px rgba(20,20,28,.16);
+}
+
+.velora-header .category-menu section {
+  gap: 10px;
+  padding-inline: 18px;
+}
+
+.velora-header .customer-account-menu {
+  top: calc(100% + 8px);
+  right: -42px;
+  width: 304px;
+  padding: 14px;
+  border-top: 3px solid #4b28d1;
+  border-radius: 4px;
+}
+
+.velora-header .customer-account-menu nav a {
+  min-height: 38px;
+  border-radius: 3px;
+}
+
+@media (max-width: 1080px) {
+  .velora-header .nav { gap: 14px; }
+  .velora-header .desktop-header-search { max-width: 420px; }
+  .velora-header .header-location { min-width: 48px; grid-template-columns: 1fr; justify-items: center; }
+  .velora-header .header-location > span { display: none; }
+  .velora-header .tabs > a { padding-inline: 14px; }
+}
+
+@media (max-width: 900px) {
+  .velora-header {
+    box-shadow: 0 3px 12px rgba(20,20,28,.06);
+  }
+  .velora-header .velora-announcement {
+    min-height: 24px;
+    justify-content: flex-start;
+    overflow: hidden;
+  }
+  .velora-header .velora-announcement > * {
+    display: none;
+  }
+  .velora-header .velora-announcement > span:first-child {
+    display: flex;
+    width: 100%;
+    min-height: 24px;
+    justify-content: center;
+    padding-inline: 12px;
+    border: 0;
+  }
+  .velora-header .nav {
+    width: 100%;
+    min-height: 60px;
+    gap: 8px;
+    padding-inline: 12px;
+  }
+  .velora-header .mobile-menu-trigger {
+    display: grid;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    padding: 0;
+    color: #20202a;
+    background: transparent;
+  }
+  .velora-header .velora-logo {
+    margin-right: auto;
+    font-size: 18px;
+  }
+  .velora-header .velora-logo small {
+    font-size: 5px;
+  }
+  .velora-header .actions {
+    display: flex;
+    gap: 0;
+  }
+  .velora-header .actions > a,
+  .velora-header .header-account > button {
+    min-width: 40px;
+    width: 40px;
+    min-height: 40px;
+    padding: 0;
+  }
+  .velora-header .actions .header-action > span {
+    display: none;
+  }
+  .velora-header .actions .header-location,
+  .velora-header .header-account {
+    display: none;
+  }
+  .velora-header .tabs {
+    display: none;
+  }
+  .velora-header .customer-account-menu {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .velora-header .velora-logo { font-size: 16px; }
+  .velora-header .nav { padding-inline: 6px; }
+}
+/* Header composition v2 */
+.velora-header {
+  --header-accent: #08745f;
+  --header-sale: #d64055;
+  --header-ink: #111519;
+  border-bottom-color: #dfe4e2;
+  box-shadow: 0 2px 14px rgba(15,24,21,.055);
+}
+
+.velora-header .velora-announcement {
+  min-height: 26px;
+  color: #d7ddda;
+  background: #101715;
+}
+
+.velora-header .velora-announcement > * {
+  min-height: 26px;
+  padding-inline: 28px;
+  border-color: #34403c;
+}
+
+.velora-header .velora-announcement > a:nth-child(2) {
+  color: #fff;
+}
+
+.velora-header .velora-announcement strong {
+  margin-left: 8px;
+  color: #7ee0c0;
+  font-size: 7px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.velora-header .nav {
+  min-height: 76px;
+  gap: 26px;
+}
+
+.velora-header .velora-logo {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 190px;
+}
+
+.velora-header .velora-logo > b {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  color: #fff;
+  background: var(--header-ink);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.velora-header .velora-logo > span {
+  display: grid;
+  color: var(--header-ink);
+  font-size: 19px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.velora-header .velora-logo small {
+  margin-top: 6px;
+  color: #69716e;
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.velora-header .desktop-header-search {
+  grid-template-columns: 44px minmax(0,1fr);
+  max-width: 590px;
+  min-height: 46px;
+  overflow: hidden;
+  background: #f2f5f4;
+  border: 1px solid transparent;
+  border-bottom-color: #cfd6d3;
+  border-radius: 6px;
+}
+
+.velora-header .desktop-header-search:focus-within {
+  border-color: var(--header-accent);
+  box-shadow: 0 0 0 3px rgba(8,116,95,.1);
+}
+
+.velora-header .desktop-header-search button {
+  display: grid;
+  min-width: 44px;
+  height: 44px;
+  place-items: center;
+  padding: 0;
+  color: #4f5956;
+  background: transparent;
+  border-radius: 0;
+}
+
+.velora-header .desktop-header-search button:hover {
+  color: var(--header-accent);
+}
+
+.velora-header .desktop-header-search button svg {
+  width: 18px;
+}
+
+.velora-header .desktop-header-search input {
+  height: 44px;
+  padding-right: 14px;
+  font-size: 11px;
+}
+
+.velora-header .actions {
+  gap: 2px;
+}
+
+.velora-header .actions > a:hover,
+.velora-header .header-account > button:hover,
+.velora-header .header-account > button[aria-expanded="true"] {
+  color: var(--header-accent);
+  background: #edf7f4;
+}
+
+.velora-header .header-location {
+  min-width: 88px;
+  margin-right: 5px;
+  padding-right: 12px;
+  border-right: 1px solid #e0e4e2;
+}
+
+.velora-header .cart-dot::after {
+  background: var(--header-sale);
+}
+
+.velora-header .tabs {
+  min-height: 46px;
+  background: #f7f9f8;
+  border-top-color: #e7ebe9;
+}
+
+.velora-header .tabs > a {
+  min-height: 46px;
+  padding-inline: 21px;
+  color: #39423f;
+  border-bottom-width: 3px;
+}
+
+.velora-header .tabs > a:hover,
+.velora-header .tabs > a.active {
+  color: var(--header-accent);
+  background: #fff;
+  border-bottom-color: var(--header-accent);
+}
+
+.velora-header .tabs > .sale-link {
+  color: var(--header-sale);
+}
+
+.velora-header .category-menu summary {
+  min-height: 46px;
+  gap: 8px;
+  color: #fff;
+  background: var(--header-ink);
+  border: 0;
+}
+
+.velora-header .category-menu summary > svg:first-child {
+  width: 15px;
+}
+
+.velora-header .category-menu[open] summary {
+  color: #fff;
+  background: var(--header-accent);
+}
+
+.velora-header .category-menu > div {
+  grid-template-columns: repeat(4,minmax(150px,1fr));
+  width: min(760px,calc(100vw - 48px));
+  border-top-color: var(--header-accent);
+}
+
+.velora-header .category-menu > div > header {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 3px;
+  margin: -4px 0 18px;
+  padding: 0 18px 15px;
+  border-bottom: 1px solid #e5e8e7;
+}
+
+.velora-header .category-menu > div > header span {
+  color: var(--header-accent);
+  font-size: 8px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.velora-header .category-menu > div > header strong {
+  font-size: 17px;
+}
+
+.velora-header .category-menu section > a:first-child {
+  display: flex;
+  justify-content: space-between;
+  color: var(--header-ink);
+}
+
+.velora-header .category-menu section > a:first-child span {
+  color: var(--header-accent);
+  font-size: 7px;
+  font-weight: 700;
+}
+
+.velora-header .customer-account-menu {
+  border-top-color: var(--header-accent);
+}
+
+.velora-header .customer-account-menu nav a:hover {
+  color: var(--header-accent);
+  background: #edf7f4;
+}
+
+.velora-header .account-signin {
+  background: var(--header-accent);
+}
+
+@media (max-width: 1080px) {
+  .velora-header .velora-logo { min-width: 156px; }
+  .velora-header .velora-logo > b { width: 34px; height: 34px; }
+  .velora-header .velora-logo > span { font-size: 16px; }
+}
+
+@media (max-width: 900px) {
+  .velora-header .nav { min-height: 62px; }
+  .velora-header .velora-logo {
+    min-width: 0;
+    gap: 8px;
+  }
+  .velora-header .velora-logo > b {
+    width: 32px;
+    height: 32px;
+    font-size: 9px;
+  }
+  .velora-header .velora-logo > span {
+    font-size: 16px;
+  }
+  .velora-header .velora-logo small {
+    display: none;
+  }
+  .mobile-nav-heading .velora-logo > span {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 380px) {
+  .velora-header .velora-logo > b { display: none; }
+  .velora-header .velora-logo > span { font-size: 15px; }
 }

@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useState } from "react";
 import { AlertTriangle, Ban, Bell, Bot, CheckCheck, Headphones, Image, MessageCircle, MoreVertical, Paperclip, Search, Send, ShoppingBag, Store, Upload, X } from "lucide-react";
 import { useShop } from "../context/ShopContext";
+import { getStored } from "../utils/storage";
 
 const seededConversations = [
   { id: "support", type: "support", name: "MarketSphere Support", subtitle: "Customer Care", unread: 1, blocked: false, messages: [{ id: 1, from: "them", body: "Hello. How can our support team help today?", date: "2026-07-23T09:15:00.000Z" }] },
@@ -9,11 +10,7 @@ const seededConversations = [
 ];
 
 function readStored() {
-  try {
-    return JSON.parse(window.localStorage.getItem("marketsphere:chats")) || seededConversations;
-  } catch {
-    return seededConversations;
-  }
+  return getStored("marketsphere:chats", seededConversations);
 }
 
 export default function ChatPage() {

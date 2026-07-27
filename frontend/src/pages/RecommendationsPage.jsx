@@ -6,14 +6,7 @@ import { brands, categories } from "../data/shopData";
 import { catalog } from "../data/catalog";
 import { useShop } from "../context/ShopContext";
 import { money } from "../utils/format";
-
-function readStored(key, fallback = []) {
-  try {
-    return JSON.parse(window.localStorage.getItem(key)) || fallback;
-  } catch {
-    return fallback;
-  }
-}
+import { getStored } from "../utils/storage";
 
 function productBrand(product) {
   const match = brands.find((brand) => product.name.toLowerCase().includes(brand.toLowerCase()));
@@ -33,8 +26,8 @@ function RecommendationSection({ eyebrow, title, copy, icon: Icon, products, add
 export default function RecommendationsPage() {
   const { addToCart, orders, toggleWishlist } = useShop();
   const [message, setMessage] = useState("");
-  const viewedHistory = useMemo(() => readStored("marketsphere:recently-viewed"), []);
-  const addresses = useMemo(() => readStored("marketsphere:addresses"), []);
+  const viewedHistory = useMemo(() => getStored("marketsphere:recently-viewed", []), []);
+  const addresses = useMemo(() => getStored("marketsphere:addresses", []), []);
   const location = addresses.find((item) => item.primary)?.city || addresses[0]?.city || "Bengaluru";
 
   const signals = useMemo(() => {

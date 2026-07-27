@@ -8,6 +8,7 @@ import ProductDetail from "../components/product/ProductDetail";
 import ReviewsAndBundles from "../components/product/ReviewsAndBundles";
 import { catalog, getProductBySlug } from "../data/catalog";
 import { useShop } from "../context/ShopContext";
+import { getStored, setStored } from "../utils/storage";
 
 export default function ProductPage() {
   const { slug } = useParams();
@@ -16,21 +17,12 @@ export default function ProductPage() {
 
   useEffect(() => {
     if (!product) return;
-    let history = [];
-    try {
-      history = JSON.parse(window.localStorage.getItem("marketsphere:recently-viewed")) || [];
-    } catch {
-      history = [];
-    }
+    const history = getStored("marketsphere:recently-viewed", []);
     const previous = history.find((item) => item.slug === product.slug);
     const entry = { id: product.id, slug: product.slug, viewedAt: new Date().toISOString(), viewCount: (previous?.viewCount || 0) + 1 };
-    window.localStorage.setItem("marketsphere:recently-viewed", JSON.stringify([entry, ...history.filter((item) => item.slug !== product.slug)].slice(0, 24)));
-    try {
-      const sync = JSON.parse(window.localStorage.getItem("marketsphere:history-sync"));
-      if (sync?.enabled) window.localStorage.setItem("marketsphere:history-sync", JSON.stringify({ ...sync, lastSyncedAt: new Date().toISOString() }));
-    } catch {
-      // Local history remains available when sync metadata is unavailable.
-    }
+    setStored("marketsphere:recently-viewed", [entry, ...history.filter((item) => item.slug !== product.slug)].slice(0, 24));
+    const sync = getStored("marketsphere:history-sync", null);
+    if (sync?.enabled) setStored("marketsphere:history-sync", { ...sync, lastSyncedAt: new Date().toISOString() });
   }, [product]);
 
   if (!product) {

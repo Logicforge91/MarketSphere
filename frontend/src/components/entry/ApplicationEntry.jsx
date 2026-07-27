@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { appConfig, checkApplicationStatus } from "../../config/appConfig";
 import { useLocalization } from "../../context/LocalizationContext";
+import { getStored } from "../../utils/storage";
 
 const ENTRY_KEY = "marketsphere:entry-preferences";
 
@@ -35,11 +36,7 @@ const regions = [
 ];
 
 function readPreferences() {
-  try {
-    return JSON.parse(window.localStorage.getItem(ENTRY_KEY)) || null;
-  } catch {
-    return null;
-  }
+  return getStored(ENTRY_KEY, null);
 }
 
 export default function ApplicationEntry({ children }) {

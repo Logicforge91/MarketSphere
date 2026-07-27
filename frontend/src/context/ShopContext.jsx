@@ -1,30 +1,31 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { cartItems, mobileProducts, orders as seedOrders, shoeProducts } from "../data/shopData";
 import { catalog } from "../data/catalog";
-import { getStored, setStored } from "../utils/storage";
+import { setStored } from "../utils/storage";
+import { usePersistentState } from "../hooks/usePersistentState";
 
 const ShopContext = createContext(null);
 
 export function ShopProvider({ children }) {
-  const [cart, setCart] = useState(() => getStored("marketsphere:cart", cartItems));
-  const [wishlist, setWishlist] = useState(() => getStored("marketsphere:wishlist", [shoeProducts[0], mobileProducts[1]]));
-  const [savedForLater, setSavedForLater] = useState(() => getStored("marketsphere:saved-for-later", []));
-  const [compareProducts, setCompareProducts] = useState(() => getStored("marketsphere:compare", shoeProducts.slice(0, 3)));
+  const [cart, setCart] = usePersistentState("marketsphere:cart", cartItems);
+  const [wishlist, setWishlist] = usePersistentState("marketsphere:wishlist", [shoeProducts[0], mobileProducts[1]]);
+  const [savedForLater, setSavedForLater] = usePersistentState("marketsphere:saved-for-later", []);
+  const [compareProducts, setCompareProducts] = usePersistentState("marketsphere:compare", shoeProducts.slice(0, 3));
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [priceLimit, setPriceLimit] = useState(80000);
   const [sortBy, setSortBy] = useState("featured");
   const [notification, setNotification] = useState("");
-  const [orders, setOrders] = useState(() => getStored("marketsphere:orders", seedOrders));
-  const [returnRequests, setReturnRequests] = useState(() => getStored("marketsphere:returns", []));
-  const [reviews, setReviews] = useState(() => getStored("marketsphere:reviews", [
+  const [orders, setOrders] = usePersistentState("marketsphere:orders", seedOrders);
+  const [returnRequests, setReturnRequests] = usePersistentState("marketsphere:returns", []);
+  const [reviews, setReviews] = usePersistentState("marketsphere:reviews", [
     { id: "REV-SEED-1", productSlug: "floral-midi-dress", author: "Aarav S.", title: "Excellent quality and fit", body: "The product matched the photos and arrived beautifully packed.", productRating: 5, sellerRating: 5, deliveryRating: 4, verified: true, likes: 42, dislikes: 2, moderationStatus: "Published", createdAt: "2026-07-12T10:30:00.000Z", media: { images: [], video: null } },
     { id: "REV-SEED-2", productSlug: "floral-midi-dress", author: "Meera K.", title: "Worth the price", body: "Comfortable, well finished and delivery was quicker than expected.", productRating: 4, sellerRating: 4, deliveryRating: 5, verified: true, likes: 18, dislikes: 1, moderationStatus: "Published", createdAt: "2026-07-16T08:10:00.000Z", media: { images: [], video: null } },
-  ]));
-  const [productQuestions, setProductQuestions] = useState(() => getStored("marketsphere:questions", [
+  ]);
+  const [productQuestions, setProductQuestions] = usePersistentState("marketsphere:questions", [
     { id: "QUE-SEED-1", productSlug: "*", author: "Priya M.", question: "Is the colour true to the product images?", createdAt: "2026-07-15T09:15:00.000Z", status: "Answered", notify: true, reports: [], answer: { id: "ANS-SEED-1", author: "MarketSphere Select", seller: true, body: "Yes. Minor variation may occur depending on screen settings.", createdAt: "2026-07-15T11:20:00.000Z", helpful: 24, reports: [] } },
     { id: "QUE-SEED-2", productSlug: "*", author: "Rohan K.", question: "Does this include the original brand packaging?", createdAt: "2026-07-13T13:40:00.000Z", status: "Answered", notify: false, reports: [], answer: { id: "ANS-SEED-2", author: "MarketSphere Select", seller: true, body: "Yes, the item ships in its original packaging with all included accessories.", createdAt: "2026-07-13T16:05:00.000Z", helpful: 11, reports: [] } },
-  ]));
+  ]);
 
   const products = useMemo(() => {
     const filtered = catalog.filter((product) => {
@@ -43,37 +44,8 @@ export function ShopProvider({ children }) {
   }, [activeCategory, priceLimit, query, sortBy]);
 
   useEffect(() => {
-    setStored("marketsphere:cart", cart);
     setStored("marketsphere:cart-activity", new Date().toISOString());
   }, [cart]);
-
-  useEffect(() => {
-    setStored("marketsphere:wishlist", wishlist);
-  }, [wishlist]);
-
-  useEffect(() => {
-    setStored("marketsphere:saved-for-later", savedForLater);
-  }, [savedForLater]);
-
-  useEffect(() => {
-    setStored("marketsphere:compare", compareProducts);
-  }, [compareProducts]);
-
-  useEffect(() => {
-    setStored("marketsphere:orders", orders);
-  }, [orders]);
-
-  useEffect(() => {
-    setStored("marketsphere:returns", returnRequests);
-  }, [returnRequests]);
-
-  useEffect(() => {
-    setStored("marketsphere:reviews", reviews);
-  }, [reviews]);
-
-  useEffect(() => {
-    setStored("marketsphere:questions", productQuestions);
-  }, [productQuestions]);
 
   const addToCart = useCallback((product) => {
     setCart((items) => {

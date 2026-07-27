@@ -3,13 +3,10 @@ import { Bell, Camera, Check, ChevronRight, CreditCard, Crown, Download, Eye, Gi
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useShop } from "../context/ShopContext";
+import { getStored } from "../utils/storage";
 
 function readAddresses() {
-  try {
-    return JSON.parse(window.localStorage.getItem("marketsphere:addresses")) || [];
-  } catch {
-    return [];
-  }
+  return getStored("marketsphere:addresses", []);
 }
 
 export default function AccountPage() {

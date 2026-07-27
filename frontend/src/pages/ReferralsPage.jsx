@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { AlertTriangle, Check, CheckCircle2, Clock3, Copy, Gift, Link2, Mail, MessageCircle, Send, Share2, ShieldCheck, Smartphone, Users, XCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { getStored } from "../utils/storage";
 
 const initialReferrals = [
   { id: "REF-1041", contact: "priya@example.com", name: "Priya", date: "2026-07-18T10:15:00.000Z", status: "Reward earned", reward: 300 },
@@ -9,11 +10,7 @@ const initialReferrals = [
 ];
 
 function readStored() {
-  try {
-    return JSON.parse(window.localStorage.getItem("marketsphere:referrals")) || initialReferrals;
-  } catch {
-    return initialReferrals;
-  }
+  return getStored("marketsphere:referrals", initialReferrals);
 }
 
 export default function ReferralsPage() {

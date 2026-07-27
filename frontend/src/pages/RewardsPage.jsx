@@ -3,6 +3,7 @@ import { Award, CalendarHeart, Check, ChevronRight, Clock3, Crown, Gift, History
 import { useAuth } from "../context/AuthContext";
 import { useShop } from "../context/ShopContext";
 import { money } from "../utils/format";
+import { getStored } from "../utils/storage";
 
 const tiers = [
   { name: "Explorer", min: 0, icon: Star, benefits: ["1 point per Rs. 100", "Member-only prices", "Early sale access"] },
@@ -16,19 +17,11 @@ const rewardOptions = [
   { id: "SHIPFREE", title: "Free express delivery", points: 350, value: 149, min: 999 },
 ];
 
-function readStored(key, fallback) {
-  try {
-    return JSON.parse(window.localStorage.getItem(key)) || fallback;
-  } catch {
-    return fallback;
-  }
-}
-
 export default function RewardsPage() {
   const { user } = useAuth();
   const { orders } = useShop();
   const earnedFromOrders = useMemo(() => Math.floor(orders.filter((order) => order.status !== "Cancelled").reduce((sum, order) => sum + (order.total || 0), 0) / 100), [orders]);
-  const [state, setState] = useState(() => readStored("marketsphere:loyalty", {
+  const [state, setState] = useState(() => getStored("marketsphere:loyalty", {
     balance: 1280 + earnedFromOrders,
     lifetime: 4180 + earnedFromOrders,
     coupons: [],

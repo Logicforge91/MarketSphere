@@ -5,17 +5,10 @@ import { useShop } from "../context/ShopContext";
 import { money } from "../utils/format";
 import { slugify } from "../data/catalog";
 import ShareDialog from "../components/common/ShareDialog";
+import { getStored } from "../utils/storage";
 
 const COLLECTIONS_KEY = "marketsphere:wishlist-collections";
 const ALERTS_KEY = "marketsphere:wishlist-alerts";
-
-function readStorage(key, fallback) {
-  try {
-    return JSON.parse(window.localStorage.getItem(key)) || fallback;
-  } catch {
-    return fallback;
-  }
-}
 
 const initialCollections = [
   { id: "favorites", name: "My favourites", privacy: "private", products: [] },
@@ -24,8 +17,8 @@ const initialCollections = [
 
 export default function WishlistPage() {
   const { addToCart, toggleWishlist, wishlist } = useShop();
-  const [collections, setCollections] = useState(() => readStorage(COLLECTIONS_KEY, initialCollections));
-  const [alerts, setAlerts] = useState(() => readStorage(ALERTS_KEY, {}));
+  const [collections, setCollections] = useState(() => getStored(COLLECTIONS_KEY, initialCollections));
+  const [alerts, setAlerts] = useState(() => getStored(ALERTS_KEY, {}));
   const [activeCollection, setActiveCollection] = useState("all");
   const [newCollection, setNewCollection] = useState("");
   const [creating, setCreating] = useState(false);

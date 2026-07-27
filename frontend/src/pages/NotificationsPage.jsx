@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Bell, Check, CheckCheck, CreditCard, Gift, Heart, Mail, MessageCircle, PackageCheck, RefreshCw, RotateCcw, Settings2, ShoppingBag, Smartphone, Tag, Trash2, Truck } from "lucide-react";
 import { useShop } from "../context/ShopContext";
+import { getStored } from "../utils/storage";
 
 const initialHistory = [
   { id: "NOT-1", category: "order", title: "Order confirmed", body: "Order #MS205186 has been confirmed and is being processed.", date: "2026-07-23T09:35:00.000Z", read: false },
@@ -27,19 +28,11 @@ const categoryMeta = {
   cart: ["Cart", ShoppingBag],
 };
 
-function readStored(key, fallback) {
-  try {
-    return JSON.parse(window.localStorage.getItem(key)) || fallback;
-  } catch {
-    return fallback;
-  }
-}
-
 export default function NotificationsPage() {
   const { notification } = useShop();
   const [view, setView] = useState("inbox");
   const [filter, setFilter] = useState("all");
-  const [history, setHistory] = useState(() => readStored("marketsphere:notification-history", initialHistory));
+  const [history, setHistory] = useState(() => getStored("marketsphere:notification-history", initialHistory));
   const [preferences, setPreferences] = useState(() => readStored("marketsphere:notification-preferences", {
     channels: { push: false, email: true, sms: true, whatsapp: false, inApp: true },
     topics: { order: true, payment: true, delivery: true, refund: true, return: true, offer: false, price: true, stock: true, wishlist: true, cart: false },

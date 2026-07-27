@@ -3,6 +3,7 @@ import { CalendarClock, Camera, Check, Image, PackageCheck, RefreshCw, RotateCcw
 import { Link } from "react-router-dom";
 import { useShop } from "../context/ShopContext";
 import { money } from "../utils/format";
+import { getStored } from "../utils/storage";
 
 const requestTypes = [
   { id: "Return", copy: "Send the item back for a refund", icon: RotateCcw },
@@ -13,11 +14,7 @@ const requestTypes = [
 const reasons = ["Size or fit issue", "Damaged product", "Wrong item received", "Colour differs from listing", "Quality not as expected", "Missing parts or accessories", "Changed my mind"];
 
 function readAddresses() {
-  try {
-    return JSON.parse(window.localStorage.getItem("marketsphere:addresses")) || [];
-  } catch {
-    return [];
-  }
+  return getStored("marketsphere:addresses", []);
 }
 
 export default function ReturnsPage() {

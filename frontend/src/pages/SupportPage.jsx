@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Bot, Check, ChevronDown, CircleHelp, Clock3, Headphones, Mail, MessageCircle, Paperclip, Phone, Search, Send, Star, TicketCheck, Upload, X } from "lucide-react";
 import { useShop } from "../context/ShopContext";
+import { getStored } from "../utils/storage";
 
 const helpArticles = [
   { category: "Orders", title: "Where is my order?", body: "Open Orders, select the purchase and choose Live tracking to view shipment scans, courier details and delivery estimates." },
@@ -18,21 +19,13 @@ const initialTickets = [
   { id: "TKT-27902", subject: "Return pickup reschedule", category: "Return", status: "In progress", createdAt: "2026-07-15T08:20:00.000Z", context: "Return #RET204912", messages: 2, rating: 0 },
 ];
 
-function readStored(key, fallback) {
-  try {
-    return JSON.parse(window.localStorage.getItem(key)) || fallback;
-  } catch {
-    return fallback;
-  }
-}
-
 export default function SupportPage() {
   const { orders, returnRequests } = useShop();
   const [view, setView] = useState("help");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
   const [openArticle, setOpenArticle] = useState("");
-  const [tickets, setTickets] = useState(() => readStored("marketsphere:support-tickets", initialTickets));
+  const [tickets, setTickets] = useState(() => getStored("marketsphere:support-tickets", initialTickets));
   const [ticketForm, setTicketForm] = useState({ category: "Order", subject: "", description: "", context: "", priority: "Normal" });
   const [attachments, setAttachments] = useState([]);
   const [message, setMessage] = useState("");

@@ -4,21 +4,14 @@ import { Link } from "react-router-dom";
 import ProductCard from "../components/product/ProductCard";
 import { catalog } from "../data/catalog";
 import { useShop } from "../context/ShopContext";
+import { getStored } from "../utils/storage";
 
 function readHistory() {
-  try {
-    return JSON.parse(window.localStorage.getItem("marketsphere:recently-viewed")) || [];
-  } catch {
-    return [];
-  }
+  return getStored("marketsphere:recently-viewed", []);
 }
 
 function readSync() {
-  try {
-    return JSON.parse(window.localStorage.getItem("marketsphere:history-sync")) || { enabled: true, lastSyncedAt: new Date().toISOString() };
-  } catch {
-    return { enabled: true, lastSyncedAt: new Date().toISOString() };
-  }
+  return getStored("marketsphere:history-sync", { enabled: true, lastSyncedAt: new Date().toISOString() });
 }
 
 export default function RecentlyViewedPage() {
