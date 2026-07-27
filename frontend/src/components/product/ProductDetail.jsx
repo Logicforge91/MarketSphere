@@ -67,14 +67,14 @@ export default function ProductDetail({ product = productDetail, onAdd, onCompar
     <section className="product-detail-shell">
       <div className="advanced-gallery">
         <div className="media-mode-switch">
-          <button className={mediaMode === "image" ? "active" : ""} onClick={() => setMediaMode("image")} title="Product photos"><Box size={16} /></button>
-          <button className={mediaMode === "video" ? "active" : ""} onClick={() => setMediaMode("video")} title="Product video"><Play size={16} /></button>
-          <button className={mediaMode === "360" ? "active" : ""} onClick={() => setMediaMode("360")} title="360 degree view"><RotateCw size={16} /></button>
+          <button className={mediaMode === "image" ? "active" : ""} aria-label="Show product photos" aria-pressed={mediaMode === "image"} onClick={() => setMediaMode("image")} title="Product photos"><Box size={16} /></button>
+          <button className={mediaMode === "video" ? "active" : ""} aria-label="Show captioned product video preview" aria-pressed={mediaMode === "video"} onClick={() => setMediaMode("video")} title="Product video"><Play size={16} /></button>
+          <button className={mediaMode === "360" ? "active" : ""} aria-label="Show 360 degree product view" aria-pressed={mediaMode === "360"} onClick={() => setMediaMode("360")} title="360 degree view"><RotateCw size={16} /></button>
         </div>
         <div className="product-thumbnails">{variantOptions.color.map((color) => <button className={selection.color === color ? "active" : ""} onClick={() => choose("color", color)} key={color}><img src={product.image} alt={`${color} view`} /></button>)}</div>
         <div className={`product-media-stage ${zoomed ? "zoomed" : ""} mode-${mediaMode}`}>
           <img src={variant.image} style={{ objectPosition: variant.position }} alt={`${product.name} in ${selection.color}`} />
-          {mediaMode === "video" && <div className="media-overlay"><Play size={38} /><strong>Product video</strong><span>See the fit and movement</span></div>}
+          {mediaMode === "video" && <div className="media-overlay" role="img" aria-label={`Captioned product video preview of ${product.name} in ${selection.color}`}><Play size={38} /><strong>Product video</strong><span aria-label="Video caption">Caption: See the fit and movement</span></div>}
           {mediaMode === "360" && <div className="media-overlay"><RotateCw size={38} /><strong>Drag for 360° view</strong><span>Interactive preview</span></div>}
           {mediaMode === "image" && <button className="zoom-control" onClick={() => setZoomed((value) => !value)}><ZoomIn size={17} /> {zoomed ? "Reset" : "Zoom"}</button>}
         </div>

@@ -2,15 +2,18 @@ import React, { useState } from "react";
 import { ArrowRight, LockKeyhole, ShieldCheck } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import CaptchaCheck from "../components/common/CaptchaCheck";
 
 export default function AuthPage() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [captchaValid, setCaptchaValid] = useState(false);
   const { loginWithPassword, socialLogin } = useAuth();
   const navigate = useNavigate();
 
   function submit(event) {
     event.preventDefault();
+    if (!captchaValid) return;
     loginWithPassword({ identifier, password });
     navigate("/account");
   }
@@ -28,7 +31,8 @@ export default function AuthPage() {
         <form className="auth-form" onSubmit={submit}>
           <label>Email or mobile number<input value={identifier} onChange={(event) => setIdentifier(event.target.value)} autoComplete="username" required placeholder="you@example.com or +91..." /></label>
           <label><span>Password <Link to="/forgot-password">Forgot password?</Link></span><input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" minLength="4" required placeholder="Enter your password" /></label>
-          <button className="primary" type="submit">Sign in <ArrowRight size={17} /></button>
+          <CaptchaCheck onChange={setCaptchaValid} />
+          <button className="primary" disabled={!captchaValid} type="submit">Sign in <ArrowRight size={17} /></button>
         </form>
         <div className="auth-divider"><span>or continue with</span></div>
         <div className="social-login">

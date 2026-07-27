@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { cartItems, mobileProducts, orders as seedOrders, shoeProducts } from "../data/shopData";
 import { catalog } from "../data/catalog";
-import { getStored } from "../utils/storage";
+import { getStored, setStored } from "../utils/storage";
 
 const ShopContext = createContext(null);
 
@@ -43,36 +43,36 @@ export function ShopProvider({ children }) {
   }, [activeCategory, priceLimit, query, sortBy]);
 
   useEffect(() => {
-    window.localStorage.setItem("marketsphere:cart", JSON.stringify(cart));
-    window.localStorage.setItem("marketsphere:cart-activity", new Date().toISOString());
+    setStored("marketsphere:cart", cart);
+    setStored("marketsphere:cart-activity", new Date().toISOString());
   }, [cart]);
 
   useEffect(() => {
-    window.localStorage.setItem("marketsphere:wishlist", JSON.stringify(wishlist));
+    setStored("marketsphere:wishlist", wishlist);
   }, [wishlist]);
 
   useEffect(() => {
-    window.localStorage.setItem("marketsphere:saved-for-later", JSON.stringify(savedForLater));
+    setStored("marketsphere:saved-for-later", savedForLater);
   }, [savedForLater]);
 
   useEffect(() => {
-    window.localStorage.setItem("marketsphere:compare", JSON.stringify(compareProducts));
+    setStored("marketsphere:compare", compareProducts);
   }, [compareProducts]);
 
   useEffect(() => {
-    window.localStorage.setItem("marketsphere:orders", JSON.stringify(orders));
+    setStored("marketsphere:orders", orders);
   }, [orders]);
 
   useEffect(() => {
-    window.localStorage.setItem("marketsphere:returns", JSON.stringify(returnRequests));
+    setStored("marketsphere:returns", returnRequests);
   }, [returnRequests]);
 
   useEffect(() => {
-    window.localStorage.setItem("marketsphere:reviews", JSON.stringify(reviews));
+    setStored("marketsphere:reviews", reviews);
   }, [reviews]);
 
   useEffect(() => {
-    window.localStorage.setItem("marketsphere:questions", JSON.stringify(productQuestions));
+    setStored("marketsphere:questions", productQuestions);
   }, [productQuestions]);
 
   const addToCart = useCallback((product) => {

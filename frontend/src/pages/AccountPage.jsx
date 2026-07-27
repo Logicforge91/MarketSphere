@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Bell, Camera, Check, ChevronRight, CreditCard, Crown, Download, Eye, Gift, Globe2, KeyRound, LockKeyhole, LogOut, MapPin, Save, ShieldCheck, Sparkles, Smartphone, Trash2, UserRound, WalletCards, X } from "lucide-react";
+import { Bell, Camera, Check, ChevronRight, CreditCard, Crown, Download, Eye, Gift, Globe2, KeyRound, Languages, LockKeyhole, LogOut, MapPin, Save, ShieldCheck, Sparkles, Smartphone, Trash2, UserRound, WalletCards, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useShop } from "../context/ShopContext";
@@ -91,11 +91,13 @@ export default function AccountPage() {
         <button className={section === "preferences" ? "active" : ""} onClick={() => setSection("preferences")}><Globe2 /> Preferences</button>
         <button className={section === "privacy" ? "active" : ""} onClick={() => setSection("privacy")}><Eye /> Privacy</button>
         <button className={section === "security" ? "active" : ""} onClick={() => setSection("security")}><ShieldCheck /> Security</button>
+        <Link to="/security-privacy"><LockKeyhole /> Security centre</Link>
         <Link to="/addresses"><MapPin /> Saved addresses <b>{addresses.length}</b></Link>
         <Link to="/payment-methods"><WalletCards /> Payment methods</Link>
         <Link to="/gift-cards"><Gift /> Gift cards</Link>
         <Link to="/membership"><Crown /> Membership</Link>
         <Link to="/recommendations"><Sparkles /> Recommendations</Link>
+        <Link to="/localization"><Languages /> Language and region</Link>
         <button onClick={signOut}><LogOut /> Sign out</button>
       </aside>
 

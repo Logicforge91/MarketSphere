@@ -5,6 +5,7 @@ import ProductCard from "../components/product/ProductCard";
 import { catalog } from "../data/catalog";
 import { brands } from "../data/shopData";
 import { useShop } from "../context/ShopContext";
+import { useLocalization } from "../context/LocalizationContext";
 
 const PAGE_SIZE = 8;
 const sellers = ["MarketSphere Select", "The Modern Wardrobe", "Sole Society", "The Beauty Room"];
@@ -40,6 +41,7 @@ function enrichProduct(product, index) {
     gender: product.category === "Men" ? "Men" : product.category === "Women" ? "Women" : "Unisex",
     material: materials[index % materials.length],
     popularity: 9200 - index * 317,
+    regionalRank: (index * 37) % 100,
     sizes: sizes.slice(index % 2, 4 + (index % 2)),
     soldCount: 4100 - index * 113,
     style: styles[index % styles.length],
@@ -52,6 +54,7 @@ const discoveryCatalog = catalog.map(enrichProduct);
 
 export default function ListingPage() {
   const { addToCart, toggleWishlist } = useShop();
+  const { region } = useLocalization();
   const [params, setParams] = useSearchParams();
   const [view, setView] = useState("grid");
   const [loadMode, setLoadMode] = useState("pages");
@@ -111,6 +114,7 @@ export default function ListingPage() {
 
   const products = useMemo(() => {
     const filtered = discoveryCatalog.filter((product) => {
+      if (product.regionalRank >= region.availability) return false;
       if (category !== "All" && product.category !== category) return false;
       if (subcategory !== "All" && product.subcategory !== subcategory) return false;
       if (brand !== "All" && product.brand !== brand) return false;
@@ -143,7 +147,7 @@ export default function ListingPage() {
       if (sortBy === "best-selling") return b.soldCount - a.soldCount;
       return Number(b.isBestSeller) - Number(a.isBestSeller) || b.rating - a.rating;
     });
-  }, [brand, category, collection, facets, mode, priceRange, seller, sortBy, subcategory]);
+  }, [brand, category, collection, facets, mode, priceRange, region.availability, seller, sortBy, subcategory]);
 
   useEffect(() => {
     setPage(1);
@@ -168,6 +172,7 @@ export default function ListingPage() {
       <nav className="discovery-modes" aria-label="Product collections">
         {[["all", "All products"], ["new", "New arrivals"], ["best", "Best sellers"], ["deals", "Deals"], ["recommended", "Recommended"]].map(([value, label]) => <button className={mode === value ? "active" : ""} onClick={() => setFilter("mode", value)} key={value}>{label}</button>)}
       </nav>
+      <p className="regional-catalog-note"><Globe2 size={13} /> Showing products available in {region.country} · Prices include regional currency conversion</p>
 
       <div className="discovery-layout">
         <aside className="discovery-filters">

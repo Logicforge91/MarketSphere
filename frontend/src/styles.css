@@ -1,4 +1,5 @@
 :root {
+  --a11y-text-scale: 1;
   --primary: #5b5cf6;
   --success: #10b981;
   --warning: #f59e0b;
@@ -14,9 +15,11 @@
 
 body {
   margin: 0;
+  overflow-x: hidden;
   color: var(--ink);
   background: #f3f6fb;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: calc(16px * var(--a11y-text-scale));
 }
 
 a {
@@ -24,8 +27,124 @@ a {
   text-decoration: none;
 }
 
-button, input { font: inherit; }
+button, input, select, textarea { font: inherit; }
 button { cursor: pointer; border: 0; }
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 1000;
+  top: 10px;
+  left: 10px;
+  padding: 11px 16px;
+  color: #fff;
+  background: #111827;
+  font-weight: 800;
+  transform: translateY(-150%);
+}
+
+.skip-link:focus { transform: translateY(0); }
+.route-content:focus { outline: none; }
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid #1463ff !important;
+  outline-offset: 3px !important;
+}
+
+:where(input, select, textarea):user-invalid {
+  border-color: #c5162e !important;
+  box-shadow: 0 0 0 2px rgba(197, 22, 46, .14);
+}
+
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  scroll-behavior: auto !important;
+  animation-duration: .01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: .01ms !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+html[data-contrast="high"] {
+  --ink: #000;
+  --muted: #292929;
+  --line: #505050;
+  --panel: #fff;
+  --soft: #f2f2f2;
+  --primary: #2d00c7;
+}
+
+html[data-contrast="high"] body { color: #000; background: #fff; }
+html[data-contrast="high"] :where(.topbar, section, article, aside, .panel, input, select, textarea) { border-color: #505050; }
+html[data-contrast="high"] :where(a, button) { text-decoration-thickness: 2px; }
+
+.a11y-trigger {
+  position: fixed;
+  z-index: 95;
+  right: 18px;
+  bottom: 74px;
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  color: #fff;
+  background: #16131f;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, .28);
+}
+
+.a11y-trigger svg { width: 23px; }
+.a11y-backdrop { position: fixed; z-index: 150; inset: 0; display: grid; place-items: center; padding: 18px; background: rgba(10, 12, 20, .58); }
+.a11y-panel { width: min(420px, 100%); padding: 22px; color: #111827; background: #fff; border: 1px solid #d5d9e5; box-shadow: 0 24px 70px rgba(0, 0, 0, .28); }
+.a11y-panel header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
+.a11y-panel header span { color: #4b28d1; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+.a11y-panel h2 { margin: 3px 0 0; font-size: 24px; }
+.a11y-panel header button { display: grid; width: 36px; height: 36px; place-items: center; background: #f1f3f7; }
+.a11y-setting { padding: 14px 0; border-top: 1px solid #dde1ea; border-bottom: 1px solid #dde1ea; }
+.a11y-setting label { display: flex; gap: 9px; align-items: center; margin-bottom: 10px; font-weight: 800; }
+.a11y-setting label svg, .a11y-toggle > svg { width: 19px; }
+.a11y-segments { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid #aeb5c5; }
+.a11y-segments button { min-height: 38px; background: #fff; border-right: 1px solid #aeb5c5; font-weight: 750; }
+.a11y-segments button:last-child { border-right: 0; }
+.a11y-segments button.active { color: #fff; background: #3518b8; }
+.a11y-toggle { display: flex; width: 100%; gap: 11px; align-items: center; padding: 14px 0; text-align: left; background: transparent; border-bottom: 1px solid #dde1ea; }
+.a11y-toggle span { display: grid; flex: 1; }
+.a11y-toggle small { margin-top: 2px; color: #566074; }
+.a11y-toggle i { width: 38px; height: 22px; padding: 3px; background: #aeb5c5; border-radius: 20px; }
+.a11y-toggle i::after { display: block; width: 16px; height: 16px; content: ""; background: #fff; border-radius: 50%; transition: transform .15s; }
+.a11y-toggle[aria-checked="true"] i { background: #3518b8; }
+.a11y-toggle[aria-checked="true"] i::after { transform: translateX(16px); }
+.a11y-voice, .a11y-reset { display: flex; width: 100%; min-height: 42px; gap: 9px; align-items: center; justify-content: center; margin-top: 14px; font-weight: 800; }
+.a11y-voice { color: #fff; background: #3518b8; }
+.a11y-reset { color: #29233d; background: #f1f3f7; }
+.a11y-voice svg, .a11y-reset svg { width: 17px; }
+.a11y-voice-status { min-height: 18px; margin: 8px 0 0; color: #4b5563; font-size: 12px; line-height: 1.45; }
+
+@media (max-width: 700px) {
+  .a11y-trigger { right: 12px; bottom: 76px; }
+  .a11y-panel { max-height: calc(100vh - 28px); overflow-y: auto; padding: 18px; }
+}
 
 .design-panel, .desktop-page, .phone {
   background: var(--panel);
@@ -880,7 +999,7 @@ button { cursor: pointer; border: 0; }
 }
 
 @media (max-width: 800px) {
-  .account-dashboard { width: min(100% - 24px, 620px); margin-top: 16px; }
+  .account-dashboard { width: min(calc(100% - 24px), 620px); margin-top: 16px; }
   .account-welcome { grid-template-columns: auto 1fr; padding: 20px; }
   .account-edit { grid-column: 1 / -1; width: 100%; }
   .account-layout { grid-template-columns: 1fr; }
@@ -1168,7 +1287,7 @@ button { cursor: pointer; border: 0; }
 }
 
 .flipkart-home {
-  width: min(100% - 24px, 1500px);
+  width: min(calc(100% - 24px), 1500px);
   margin: 12px auto 32px;
 }
 
@@ -1488,7 +1607,7 @@ button { cursor: pointer; border: 0; }
 
 /* Flipkart-style home overhaul */
 .home-real {
-  width: min(100% - 28px, 1520px);
+  width: min(calc(100% - 28px), 1520px);
   max-width: 1520px;
   margin: 16px auto 32px;
   overflow: visible;
@@ -3017,7 +3136,7 @@ body {
 .tabs .sale-link { color: #b52f3f; }
 
 .flipkart-home {
-  width: min(100% - 32px, 1440px);
+  width: min(calc(100% - 32px), 1440px);
   margin: 18px auto 40px;
 }
 
@@ -3149,7 +3268,7 @@ body {
 
 .real-page,
 .real-product-page {
-  width: min(100% - 40px, 1180px);
+  width: min(calc(100% - 40px), 1180px);
   max-width: 1180px;
   margin: 30px auto 56px;
 }
@@ -3332,7 +3451,7 @@ body {
 }
 
 .velora-header .nav {
-  width: min(100% - 40px, 1240px);
+  width: min(calc(100% - 40px), 1240px);
   min-height: 64px;
   padding: 12px 0;
   gap: 42px;
@@ -3404,7 +3523,7 @@ body {
 .velora-header .tabs .sale-link { color: #e9485a; }
 
 .velora-home {
-  width: min(100% - 32px, 1240px);
+  width: min(calc(100% - 32px), 1240px);
   margin: 18px auto 30px;
 }
 
@@ -3663,7 +3782,7 @@ body {
 .real-page,
 .real-product-page,
 .desktop-page.real-product-page {
-  width: min(100% - 32px, 1240px);
+  width: min(calc(100% - 32px), 1240px);
   max-width: 1240px;
   margin: 20px auto 40px;
 }
@@ -3759,7 +3878,7 @@ body {
 .auth-panel .primary { background: #4f2bd9; }
 .auth-panel label { font-size: 9px; }
 
-.account-dashboard { width: min(100% - 32px, 1020px); }
+.account-dashboard { width: min(calc(100% - 32px), 1020px); }
 .account-welcome {
   min-height: 104px;
   padding: 20px 24px;
