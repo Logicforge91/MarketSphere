@@ -57,11 +57,11 @@ export default function Header() {
   }, [location.pathname, location.search]);
 
   useEffect(() => {
-    const close = (event) => {
+    const closeAccountMenu = (event) => {
       if (accountRef.current && !accountRef.current.contains(event.target)) setAccountOpen(false);
     };
-    document.addEventListener("pointerdown", close);
-    return () => document.removeEventListener("pointerdown", close);
+    document.addEventListener("pointerdown", closeAccountMenu);
+    return () => document.removeEventListener("pointerdown", closeAccountMenu);
   }, []);
 
   const isCurrent = (to) => `${location.pathname}${location.search}` === to;
@@ -88,10 +88,10 @@ export default function Header() {
       <div className="actions">
         <Link to="/localization" className="header-location" aria-label={`Shopping location ${region.country}`}><MapPin /><span><small>Deliver to</small>{region.country}</span></Link>
         <Link to="/wishlist" className="header-action" aria-label={`${t("wishlist")} with ${wishlist.length} items`}><Heart /><span>{t("wishlist")}</span></Link>
-        <div className="header-account" ref={accountRef}>
-          <button className="header-action" type="button" aria-haspopup="menu" aria-expanded={accountOpen} onClick={() => setAccountOpen((value) => !value)}><UserRound /><span>{t("account")}</span><ChevronDown /></button>
-          {accountOpen && <div className="customer-account-menu" role="menu"><header><strong>{isAuthenticated ? user?.name : "Welcome to MarketSphere"}</strong><span>{isAuthenticated ? user?.email : "Sign in to manage your account"}</span></header>{!isAuthenticated && <Link className="account-signin" to="/login">Sign in or register</Link>}<nav>{accountItems.map(([label, to, Icon]) => <Link role="menuitem" to={to} key={label}><Icon />{label}</Link>)}</nav>{isAuthenticated && <button className="account-logout" type="button" onClick={signOut}><LogOut /> Logout</button>}</div>}
-        </div>
+        {isAuthenticated ? <div className="header-account" ref={accountRef}>
+          <button className="header-action" type="button" aria-haspopup="menu" aria-expanded={accountOpen} aria-label={`${t("account")}: ${user?.name || "My profile"}`} onClick={() => setAccountOpen((open) => !open)}><UserRound /><span>{t("account")}</span><ChevronDown /></button>
+          {accountOpen && <div className="customer-account-menu" role="menu"><header><span className="account-avatar"><UserRound /></span><span><strong>{user?.name || "My account"}</strong><small>{user?.email || "Orders, rewards and preferences"}</small></span></header><nav>{accountItems.map(([label, to, Icon]) => <Link role="menuitem" to={to} key={label}><span><Icon /></span><strong>{label}</strong></Link>)}</nav><button className="account-logout" type="button" onClick={signOut}><LogOut /> Logout</button></div>}
+        </div> : <Link to="/login" className="header-action" aria-label="Sign in or create account"><UserRound /><span>Sign in</span></Link>}
         <Link to="/cart" className="cart-dot header-action" data-count={cart.length} aria-label={`${t("bag")} with ${cart.length} items`}><ShoppingBag /><span>{t("bag")}</span></Link>
       </div>
     </div>

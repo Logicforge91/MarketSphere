@@ -1,0 +1,1 @@
+import{l as o,a9 as e}from"./index-DPXPmB66.js";const m=t=>{const n=o("marketsphere:entry-preferences",{country:"IN"}),r=e[n.country]||e.IN;return new Intl.NumberFormat(r.locale,{currency:r.currency,maximumFractionDigits:0,style:"currency"}).format(Number(t||0)*r.rate)};export{m};
