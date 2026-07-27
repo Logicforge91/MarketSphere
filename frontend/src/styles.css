@@ -141,9 +141,41 @@ html[data-contrast="high"] :where(a, button) { text-decoration-thickness: 2px; }
 .a11y-voice svg, .a11y-reset svg { width: 17px; }
 .a11y-voice-status { min-height: 18px; margin: 8px 0 0; color: #4b5563; font-size: 12px; line-height: 1.45; }
 
+.network-status {
+  display: flex;
+  min-height: 30px;
+  gap: 7px;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 14px;
+  color: #305c4d;
+  background: #edf8f4;
+  border-bottom: 1px solid #cbe5db;
+  font-size: 11px;
+  font-weight: 700;
+}
+.network-status svg { width: 14px; height: 14px; }
+.network-status button { margin-left: 5px; padding: 3px 7px; color: inherit; background: transparent; border: 1px solid currentColor; font-size: 10px; font-weight: 800; }
+.network-status.offline { color: #8d321f; background: #fff1ed; border-color: #efc6bc; }
+.optimized-image { background: #eef0f4; opacity: 0; transition: opacity .2s ease; }
+.optimized-image.loaded { opacity: 1; }
+html[data-network="low"] .optimized-image { transition: none; }
+
+.product-skeleton { display: grid; gap: 9px; overflow: hidden; }
+.product-skeleton i, .product-skeleton span, .product-skeleton b { display: block; background: #e8eaf0; }
+.product-skeleton i { width: 100%; aspect-ratio: 4 / 5; }
+.product-skeleton span { width: 76%; height: 13px; }
+.product-skeleton span + span { width: 52%; height: 11px; }
+.product-skeleton b { width: 34%; height: 28px; }
+.product-skeleton > * { background-image: linear-gradient(90deg, #e8eaf0 25%, #f6f7fa 50%, #e8eaf0 75%); background-size: 200% 100%; animation: skeleton-shimmer 1.2s infinite linear; }
+@keyframes skeleton-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+html[data-network="low"] .product-skeleton > * { animation-duration: 2.2s; }
+
 @media (max-width: 700px) {
   .a11y-trigger { right: 12px; bottom: 76px; }
   .a11y-panel { max-height: calc(100vh - 28px); overflow-y: auto; padding: 18px; }
+  .network-status { justify-content: flex-start; }
+  .network-status span { flex: 1; }
 }
 
 .design-panel, .desktop-page, .phone {

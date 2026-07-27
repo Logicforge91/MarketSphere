@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import HomeFooter from "../components/home/HomeFooter";
 import {
   BenefitStrip,
   BrandStrip,
@@ -48,7 +47,6 @@ export default function HomePage() {
       <Testimonials />
       <SocialGallery />
       <Newsletter />
-      <HomeFooter />
     </main>
   );
 }

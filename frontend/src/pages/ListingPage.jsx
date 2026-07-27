@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Grid2X2, List, SlidersHorizontal, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Globe2, Grid2X2, List, SlidersHorizontal, Sparkles } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import ProductCard from "../components/product/ProductCard";
 import { catalog } from "../data/catalog";
@@ -60,6 +60,7 @@ export default function ListingPage() {
   const [loadMode, setLoadMode] = useState("pages");
   const [page, setPage] = useState(1);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [loading, setLoading] = useState(false);
   const [priceRange, setPriceRange] = useState([0, 80000]);
   const [sortBy, setSortBy] = useState("relevance");
   const [facets, setFacets] = useState({
@@ -152,7 +153,17 @@ export default function ListingPage() {
   useEffect(() => {
     setPage(1);
     setVisibleCount(PAGE_SIZE);
+    setLoading(true);
+    const timer = window.setTimeout(() => setLoading(false), 180);
+    return () => window.clearTimeout(timer);
   }, [brand, category, collection, facets, loadMode, mode, priceRange, seller, sortBy, subcategory]);
+
+  useEffect(() => {
+    if (page === 1) return undefined;
+    setLoading(true);
+    const timer = window.setTimeout(() => setLoading(false), 180);
+    return () => window.clearTimeout(timer);
+  }, [page]);
 
   useEffect(() => {
     if (loadMode !== "infinite" || !loadMarker.current) return undefined;
@@ -205,7 +216,7 @@ export default function ListingPage() {
 
           <div className="active-filters">{[category, subcategory, brand, seller, collection, ...facets.availability, ...facets.sizes, ...facets.colors, ...facets.materials, ...facets.genders, ...facets.styles].filter((value) => value !== "All").map((value) => <span key={value}>{value}</span>)}</div>
 
-          {visibleProducts.length ? <div className={`real-grid discovery-products ${view === "list" ? "list-view" : ""}`}>{visibleProducts.map((product) => <ProductCard product={product} onAdd={addToCart} onWishlist={toggleWishlist} key={product.id} />)}</div> : <div className="discovery-empty"><Sparkles /><h2>No products match these filters</h2><p>Reset the filters to explore the full collection.</p><button className="secondary" onClick={resetFilters}>Reset filters</button></div>}
+          {loading ? <div className={`real-grid discovery-products product-skeleton-grid ${view === "list" ? "list-view" : ""}`} role="status" aria-label="Loading products">{Array.from({ length: PAGE_SIZE }, (_, index) => <article className="product-skeleton" aria-hidden="true" key={index}><i /><span /><span /><b /></article>)}</div> : visibleProducts.length ? <div className={`real-grid discovery-products ${view === "list" ? "list-view" : ""}`}>{visibleProducts.map((product) => <ProductCard product={product} onAdd={addToCart} onWishlist={toggleWishlist} key={product.id} />)}</div> : <div className="discovery-empty"><Sparkles /><h2>No products match these filters</h2><p>Reset the filters to explore the full collection.</p><button className="secondary" onClick={resetFilters}>Reset filters</button></div>}
 
           {products.length > PAGE_SIZE && <footer className="listing-navigation">
             <div className="load-mode"><button className={loadMode === "pages" ? "active" : ""} onClick={() => setLoadMode("pages")}>Pages</button><button className={loadMode === "infinite" ? "active" : ""} onClick={() => setLoadMode("infinite")}>Continuous</button></div>

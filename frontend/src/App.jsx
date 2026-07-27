@@ -26,6 +26,10 @@ const RecentlyViewedPage = lazyPage(() => import("./pages/RecentlyViewedPage.jsx
 const RecommendationsPage = lazyPage(() => import("./pages/RecommendationsPage.jsx"));
 const LocalizationPage = lazyPage(() => import("./pages/LocalizationPage.jsx"));
 const SecurityPrivacyPage = lazyPage(() => import("./pages/SecurityPrivacyPage.jsx"));
+const informationalPages = () => import("./pages/InformationalPages.jsx");
+const CancellationPolicyPage = lazyPage(informationalPages, "CancellationPolicyPage");
+const SellerRegistrationPage = lazyPage(informationalPages, "SellerRegistrationPage");
+const StoreLocatorPage = lazyPage(informationalPages, "StoreLocatorPage");
 const contentPages = () => import("./pages/ContentPages.jsx");
 const ContentHubPage = lazyPage(contentPages, "ContentHubPage");
 const GuidesPage = lazyPage(contentPages, "GuidesPage");
@@ -134,6 +138,9 @@ export default function App() {
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/refund-policy" element={<RefundPolicyPage />} />
           <Route path="/return-policy" element={<ReturnPolicyPage />} />
+          <Route path="/cancellation-policy" element={<CancellationPolicyPage />} />
+          <Route path="/sell-with-us" element={<SellerRegistrationPage />} />
+          <Route path="/stores" element={<StoreLocatorPage />} />
           <Route path="/careers" element={<CareersPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
