@@ -1,0 +1,25 @@
+export const defaultWallet = {
+  cashBalance: 1250,
+  promotionalBalance: 300,
+  promotionalExpiry: "2026-08-31",
+  transactions: [
+    { id: "WTX-5012", type: "credit", category: "Refund", label: "Refund for order #MS205186", amount: 750, date: "2026-07-20T10:20:00.000Z", status: "Completed" },
+    { id: "WTX-4998", type: "credit", category: "Add money", label: "Added using UPI", amount: 500, date: "2026-07-18T08:15:00.000Z", status: "Completed" },
+    { id: "WTX-4931", type: "debit", category: "Payment", label: "Wallet payment for order #MS204912", amount: 1299, date: "2026-07-15T12:40:00.000Z", status: "Completed" },
+    { id: "WTX-4880", type: "credit", category: "Promotion", label: "MarketSphere Rewards bonus", amount: 300, date: "2026-07-10T09:00:00.000Z", status: "Promotional" },
+  ],
+};
+
+export const defaultGiftCards = [
+  { code: "GIFT500", pin: "2408", amount: 500, balance: 500, theme: "celebrate", recipient: "You", email: "customer@marketsphere.in", deliveryDate: "2026-07-18", expiry: "2027-07-18", status: "Delivered", transactions: [{ id: "GC-501", type: "credit", label: "Gift card received", amount: 500, date: "2026-07-18T09:30:00.000Z" }] },
+  { code: "MSPH-2026-1500", pin: "8931", amount: 1500, balance: 850, theme: "minimal", recipient: "You", email: "customer@marketsphere.in", deliveryDate: "2026-06-12", expiry: "2027-06-12", status: "Redeemed", transactions: [{ id: "GC-488", type: "debit", label: "Used on order #MS204912", amount: 650, date: "2026-07-15T12:40:00.000Z" }, { id: "GC-421", type: "credit", label: "Gift card received", amount: 1500, date: "2026-06-12T08:00:00.000Z" }] },
+];
+
+export const defaultMembership = {
+  planId: "free",
+  status: "Active",
+  startedAt: "2026-01-01T00:00:00.000Z",
+  renewsAt: null,
+  autoRenew: false,
+  history: [{ id: "MB-1001", label: "Free membership activated", amount: 0, date: "2026-01-01T00:00:00.000Z", status: "Completed" }],
+};
